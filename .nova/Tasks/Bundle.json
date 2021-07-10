@@ -1,0 +1,10 @@
+{
+  "actions" : {
+    "run" : {
+      "enabled" : true,
+      "script" : "deno run --allow-all .\/build.ts"
+    }
+  },
+  "identifier" : "8A6A0F7A-38A4-4D09-A31B-3FCADC7BC1CB",
+  "openLogOnRun" : "finish"
+}

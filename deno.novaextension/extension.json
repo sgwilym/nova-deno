@@ -1,0 +1,26 @@
+{
+  "identifier": "co.gwil.deno",
+  "name": "Deno",
+  "organization": "Sam Gwilym",
+  "description": "Deno runtime support for Nova.",
+  "version": "1.0",
+  "categories": ["languages"],
+
+  "main": "main.js",
+
+  "entitlements": {
+    "process": true,
+    "filesystem": "readonly"
+  },
+
+  "activationEvents": ["onLanguage:typescript", "onLanguage:tsx"],
+
+  "config": [
+    {
+      "key": "example.language-server-path",
+      "title": "Language Server Path",
+      "type": "path",
+      "placeholder": "/usr/local/bin/example"
+    }
+  ]
+}
