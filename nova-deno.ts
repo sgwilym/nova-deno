@@ -1,7 +1,7 @@
 /// <reference path="./nova-editor.d.ts" />
 
 let client: LanguageClient | null = null;
-let compositeDisposable = new CompositeDisposable();
+const compositeDisposable = new CompositeDisposable();
 
 export function activate() {
   client = new LanguageClient(
@@ -14,6 +14,10 @@ export function activate() {
     },
     {
       syntaxes: ["typescript", "tsx"],
+      initializationOptions: {
+        enable: true,
+        lint: true
+      }
     }
   );
 

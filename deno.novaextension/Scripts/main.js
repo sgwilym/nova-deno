@@ -19,7 +19,11 @@ function activate() {
     path: "/usr/bin/env",
     args: ["deno", "lsp"]
   }, {
-    syntaxes: ["typescript", "tsx"]
+    syntaxes: ["typescript", "tsx"],
+    initializationOptions: {
+      enable: true,
+      lint: true
+    }
   });
   try {
     let disposed = false;
