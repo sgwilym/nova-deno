@@ -22,5 +22,17 @@
       "type": "path",
       "placeholder": "/usr/local/bin/example"
     }
-  ]
+  ],
+
+  "commands": {
+    "editor": [
+      {
+        "title": "Format Document",
+        "command": "co.gwil.deno.commands.formatDocument",
+        "filters": {
+          "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
+        }
+      }
+    ]
+  }
 }

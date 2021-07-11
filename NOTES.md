@@ -1,4 +1,24 @@
-# Working notes
+## NEXT TIME
+
+- Need to get esbuild working now that we have URL dependencies
+- lots of weird type errors in build.ts
+- where to get URL? http? https? deno/std?
+
+# 11/7/20
+
+- So LSP has a bunch of standard commands like 'textDocument/formatting', 'textDocument/rename' etc
+- Someone is already making an extension... found the same problem regarding completions (https://devforum.nova.app/t/bug-with-textdocument-completion/969). One salient difference is I'm making this extension with Deno itself.
+  - Which is good!
+- Started building in more complex command support
+- Starting taking code wholesale from apexskier's nova-typescript extension
+
+# NEXT TIME
+
+- We got everything working!
+- Next: how do we get it to format on save?
+- https://deno.land/x/deno@v1.11.2/cli/lsp
+
+# Working notes -- 10/7/20
 
 How do you make an extension for nova?
 
