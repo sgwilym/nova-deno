@@ -1,9 +1,15 @@
 export function wrapCommand(
-  command: (...args: any) => void | Promise<void>
-): (...args: any) => void {
-  return async function wrapped(...args: any) {
+  command: (
+    workspace: Workspace,
+    ...args: Transferrable[]
+  ) => void | Promise<void>,
+): (workspace: Workspace, ...args: Transferrable[]) => void {
+  return async function wrapped(
+    workspace: Workspace,
+    ...args: Transferrable[]
+  ) {
     try {
-      await command(...args);
+      await command(workspace, ...args);
     } catch (err) {
       nova.workspace.showErrorMessage(err);
     }

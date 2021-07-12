@@ -8,18 +8,12 @@ export default function registerFormatDocument(client: LanguageClient) {
     wrapCommand(formatDocument),
   );
 
-  async function formatDocument(editor: TextEditor): Promise<void>;
   async function formatDocument(
     workspace: Workspace,
-    editor: TextEditor,
-  ): Promise<void>;
-  async function formatDocument(
-    editorOrWorkspace: TextEditor | Workspace,
-    maybeEditor?: TextEditor,
   ) {
-    const editor: TextEditor = maybeEditor ?? (editorOrWorkspace as TextEditor);
+    const editor: TextEditor = workspace.activeTextEditor;
 
-    const documentFormatting: lsp.DocumentFormattingParams = {
+    const documentFormatting = {
       textDocument: { uri: editor.document.uri },
       options: {
         // TODO: coerce editor.softTabs to number as it is returning 1, should be boolean

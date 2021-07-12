@@ -10,7 +10,8 @@
 
   "entitlements": {
     "process": true,
-    "filesystem": "readonly"
+    "filesystem": "readwrite",
+    "requests": true
   },
 
   "activationEvents": ["onLanguage:typescript", "onLanguage:tsx"],
@@ -32,7 +33,8 @@
         "filters": {
           "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
         }
-      }
+      },
+      
     ]
   }
 }

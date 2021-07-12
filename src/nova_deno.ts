@@ -1,8 +1,9 @@
 /// <reference path="./nova_editor.d.ts" />
 
 import registerFormatDocument from "./commands/format_document.ts";
+import registerCache from "./commands/cache.ts";
 
-const syntaxes = ["typescript", "tsx"];
+export const syntaxes = ["typescript", "tsx", "javascript, jsx"];
 
 const formatOnSaveKey = "co.gwil.deno.config.formatDocumentOnSave";
 
@@ -45,53 +46,96 @@ export function activate() {
     let disposed = false;
 
     compositeDisposable.add(registerFormatDocument(client));
+    compositeDisposable.add(registerCache(client));
 
     nova.workspace.onDidAddTextEditor((editor) => {
       const editorDisposable = new CompositeDisposable();
+
       compositeDisposable.add(editorDisposable);
       compositeDisposable.add(
         editor.onDidDestroy(() => editorDisposable.dispose()),
       );
 
-      // watch things that might change if this needs to happen or not
-      editorDisposable.add(editor.document.onDidChangeSyntax(refreshListener));
-
-      editorDisposable.add(
-        nova.workspace.config.onDidChange(
-          formatOnSaveKey,
-          refreshListener,
-        ),
-      );
-      editorDisposable.add(
-        nova.config.onDidChange(formatOnSaveKey, refreshListener),
-      );
-      editorDisposable.add(
-        nova.workspace.config.onDidChange(formatOnSaveKey, refreshListener),
+      nova.commands.invoke(
+        "co.gwil.deno.commands.cache",
       );
 
-      let willSaveListener = setupListener();
+      // Caching deps
+
+      editorDisposable.add(
+        editor.document.onDidChangeSyntax(refreshDidStopChangingListener),
+      );
+
+      let didStopChangingListener = setupOnDidStopChangingListener();
       compositeDisposable.add({
         dispose() {
-          willSaveListener?.dispose();
+          didStopChangingListener?.dispose();
         },
       });
 
-      function refreshListener() {
-        willSaveListener?.dispose();
-        willSaveListener = setupListener();
+      function refreshDidStopChangingListener() {
+        didStopChangingListener?.dispose();
+        didStopChangingListener = setupOnDidStopChangingListener();
       }
 
-      function setupListener() {
+      function setupOnDidStopChangingListener() {
         if (
           !(syntaxes as Array<string | null>).includes(editor.document.syntax)
         ) {
           return;
         }
 
-        return editor.onWillSave(async (editor) => {
+        return editor.onDidStopChanging(async () => {
+          await nova.commands.invoke(
+            "co.gwil.deno.commands.cache",
+          );
+        });
+      }
+
+      // Formatting
+
+      editorDisposable.add(
+        editor.document.onDidChangeSyntax(refreshOnSaveListener),
+      );
+
+      editorDisposable.add(
+        nova.workspace.config.onDidChange(
+          formatOnSaveKey,
+          refreshOnSaveListener,
+        ),
+      );
+      editorDisposable.add(
+        nova.config.onDidChange(formatOnSaveKey, refreshOnSaveListener),
+      );
+      editorDisposable.add(
+        nova.workspace.config.onDidChange(
+          formatOnSaveKey,
+          refreshOnSaveListener,
+        ),
+      );
+
+      let willSaveListener = setupOnSaveListener();
+      compositeDisposable.add({
+        dispose() {
+          willSaveListener?.dispose();
+        },
+      });
+
+      function refreshOnSaveListener() {
+        willSaveListener?.dispose();
+        willSaveListener = setupOnSaveListener();
+      }
+
+      function setupOnSaveListener() {
+        if (
+          !(syntaxes as Array<string | null>).includes(editor.document.syntax)
+        ) {
+          return;
+        }
+
+        return editor.onWillSave(async () => {
           await nova.commands.invoke(
             "co.gwil.deno.commands.formatDocument",
-            editor,
           );
         });
       }
