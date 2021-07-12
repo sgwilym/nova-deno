@@ -4,6 +4,8 @@
 
 - got deno cache working - but do it on each editor change instead.
 - let's resolve these weird ass type errors...
+- resolved them. some changes since to nova internal API.
+- Why is this markdown file being sent to Deno LS?
 
 ## Next time
 
