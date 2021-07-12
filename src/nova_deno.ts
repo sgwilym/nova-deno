@@ -2,8 +2,9 @@
 
 import registerFormatDocument from "./commands/format_document.ts";
 import registerCache from "./commands/cache.ts";
+import registerRenameSymbol from "./commands/rename_symbol.ts";
 
-export const syntaxes = ["typescript", "tsx", "javascript, jsx"];
+export const syntaxes = ["typescript", "tsx", "javascript", "jsx"];
 
 const formatOnSaveKey = "co.gwil.deno.config.formatDocumentOnSave";
 
@@ -47,6 +48,7 @@ export function activate() {
 
     compositeDisposable.add(registerFormatDocument(client));
     compositeDisposable.add(registerCache(client));
+    compositeDisposable.add(registerRenameSymbol(client));
 
     nova.workspace.onDidAddTextEditor((editor) => {
       const editorDisposable = new CompositeDisposable();
@@ -56,9 +58,12 @@ export function activate() {
         editor.onDidDestroy(() => editorDisposable.dispose()),
       );
 
+      // TODO: Only do this if syntaxes are good.
+      /*
       nova.commands.invoke(
         "co.gwil.deno.commands.cache",
       );
+      */
 
       // Caching deps
 

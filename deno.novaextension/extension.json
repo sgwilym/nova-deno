@@ -34,7 +34,13 @@
           "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
         }
       },
-      
+      {
+        "title": "Rename Symbol",
+        "command": "co.gwil.deno.rename",
+        "filters": {
+          "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
+        }
+      },
     ]
   }
 }
