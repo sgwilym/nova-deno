@@ -1,11 +1,25 @@
 # Working Notes
 
+## Next time
+
+- Ran out of steam after seeing that I need some support from Panic to make this complete.
+  - Maybe a lot. Just don't know how to proceed with some things that don't work.
+  - I guess use tee + send to Panic...
+    - ```{"jsonrpc":"2.0","result":[{"title":"Import 'openFile' from module \"./nova_utils.ts\"","kind":"quickfix","diagnostics":[{"range":{"start":{"line":14,"character":2},"end":{"line":14,"character":10}},"severity":1,"code":2304,"source":"deno-ts","message":"Cannot find name 'openFile'."}],"edit":{"documentChanges":[{"textDocument":{"uri":"file:///Volumes/Macintosh%20HD/Users/gwil/Projects/nova-deno/src/nova_deno.ts","version":1334},"edits":[{"range":{"start":{"line":5,"character":0},"end":{"line":5,"character":0}},"newText":"import { openFile } from \"./nova_utils.ts\";\n"}]}]}},{"title":"Add missing function declaration 'openFile'","kind":"quickfix","diagnostics":[{"range":{"start":{"line":14,"character":2},"end":{"line":14,"character":10}},"severity":1,"code":2304,"source":"deno-ts","message":"Cannot find name 'openFile'."}],"edit":{"documentChanges":[{"textDocument":{"uri":"file:///Volumes/Macintosh%20HD/Users/gwil/Projects/nova-deno/src/nova_deno.ts","version":1334},"edits":[{"range":{"start":{"line":194,"character":0},"end":{"line":194,"character":0}},"newText":"\nfunction openFile() {\nthrow new Error(\"Function not implemented.\");\n}\n"}]}]}}],"id":190}```
+- Regarding definitions from other modules: 
+  - ```{"jsonrpc":"2.0","result":[{"targetUri":"deno:/https/deno.land/x/vscode_languageserver_types%40v0.1.0/mod.ts","targetRange":{"start":{"line":4,"character":0},"end":{"line":3252,"character":0}},"targetSelectionRange":{"start":{"line":4,"character":0},"end":{"line":3252,"character":0}}}],"id":10}```
+  - Seems I need a way to override `textDocument/definition` so that I can request a virtual text document from deno
+
 ## 12/7/20
 
 - got deno cache working - but do it on each editor change instead.
 - let's resolve these weird ass type errors...
 - resolved them. some changes since to nova internal API.
 - Why is this markdown file being sent to Deno LS?
+  - Oh, gotta only invoke deno.cache on the right files...
+- I need to find some good types for LSP stuff... (see apply_workspace_edits)
+- Investigated non-working code actions. I think this one is on Panic. Need to report.
+  - Did it. https://devforum.nova.app/t/code-actions-not-working-with-deno-lsp-how-can-i-diagnose/1058
 
 ## Next time
 

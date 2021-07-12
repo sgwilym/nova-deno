@@ -1,1 +1,3 @@
 deno.novaextension/Scripts/main.js
+stdin.log
+stdout.log

@@ -4,7 +4,7 @@ import { openFile } from "./nova_utils.ts";
 
 // @Deprecated I want to replace this with a call to Nova's client with workspace/applyEdit, but that's currently not possible.
 // I've requested this feature.
-export async function applyWorkspaceEdit(
+export default async function d(
   workspaceEdit: lsp.WorkspaceEdit,
 ) {
   for (let change of workspaceEdit.documentChanges || []) {

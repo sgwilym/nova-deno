@@ -12,13 +12,18 @@ let client: LanguageClient | null = null;
 const compositeDisposable = new CompositeDisposable();
 
 export function activate() {
+  const inLog = nova.path.join(nova.workspace.path || "", "stdin.log");
+  const outLog = nova.path.join(nova.workspace.path || "", "stdout.log");
+
+  // try
+
   client = new LanguageClient(
     "co.gwil.deno",
     "Deno Language Server",
     {
       type: "stdio",
       path: "/usr/bin/env",
-      args: ["deno", "lsp"],
+      args: ["bash", "-c", `tee "${inLog}" | deno lsp | tee "${outLog}"`],
     },
     {
       syntaxes,
@@ -50,6 +55,14 @@ export function activate() {
     compositeDisposable.add(registerCache(client));
     compositeDisposable.add(registerRenameSymbol(client));
 
+    client.onRequest("deno/virtualTextDocument", () => {
+      console.log("yo");
+    });
+
+    client.onNotification("deno/virtualTextDocument", () => {
+      console.log("yo");
+    });
+
     nova.workspace.onDidAddTextEditor((editor) => {
       const editorDisposable = new CompositeDisposable();
 
@@ -58,12 +71,11 @@ export function activate() {
         editor.onDidDestroy(() => editorDisposable.dispose()),
       );
 
-      // TODO: Only do this if syntaxes are good.
-      /*
-      nova.commands.invoke(
-        "co.gwil.deno.commands.cache",
-      );
-      */
+      if (editor.document.syntax && syntaxes.includes(editor.document.syntax)) {
+        nova.commands.invoke(
+          "co.gwil.deno.commands.cache",
+        );
+      }
 
       // Caching deps
 

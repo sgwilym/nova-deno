@@ -1,5 +1,5 @@
 import { lsp } from "../../deps.ts";
-import { applyWorkspaceEdit } from "../apply_workspace_edit.ts";
+import applyWorkspaceEdit from "../apply_workspace_edit.ts";
 import { wrapCommand } from "../nova_utils.ts";
 import { rangeToLspRange } from "../lsp_nova_conversions.ts";
 
