@@ -1,4 +1,5 @@
 {
+  "deno.enable" : true,
   "workspace.art_style" : 0,
   "workspace.name" : "nova-deno"
 }

@@ -3,8 +3,10 @@
   "name": "Deno",
   "organization": "Sam Gwilym",
   "description": "Deno runtime support for Nova.",
-  "version": "1.0",
-  "categories": ["languages"],
+  "version": "0.1",
+  "categories": ["languages", "formatters", "validators", "completions"],
+  "repository": "https://github.com/sgwilym/nova-deno",
+  "issues": "https://github.com/sgwilym/nova-deno/issues",
 
   "main": "main.js",
 
@@ -14,14 +16,31 @@
     "requests": true
   },
 
-  "activationEvents": ["onLanguage:typescript", "onLanguage:tsx"],
-
+  "activationEvents": ["onLanguage:typescript", "onLanguage:tsx", "onLanguage:javascript", "onLanguage:jsx"],
+  
   "config": [
     {
-      "key": "example.language-server-path",
-      "title": "Language Server Path",
-      "type": "path",
-      "placeholder": "/usr/local/bin/example"
+      "key": "deno.formatOnSave",
+      "title": "Format on save",
+      "type": "boolean",
+      "description": "Toggle automatic formatting on save.",
+      "default": true
+    },
+  ],
+  
+  "configWorkspace": [
+    {
+      "key": "deno.enable",
+      "title": "Enable Deno",
+      "type": "boolean",
+      "description": "Turn Deno integration on. If you have the TypeScript extension installed, you'll need to disable it.",
+      "default": false
+    },
+    {
+      "key": "deno.unstable",
+      "title": "Support unstable Deno APIs",
+      "type": "boolean",
+      "default": false
     }
   ],
 
@@ -37,6 +56,13 @@
       {
         "title": "Rename Symbol",
         "command": "co.gwil.deno.rename",
+        "filters": {
+          "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
+        }
+      },
+      {
+        "title": "Cache dependencies",
+        "command": "co.gwil.deno.cache",
         "filters": {
           "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
         }

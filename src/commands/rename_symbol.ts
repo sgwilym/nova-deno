@@ -1,6 +1,6 @@
 import { lsp } from "../../deps.ts";
 import applyWorkspaceEdit from "../apply_workspace_edit.ts";
-import { wrapCommand } from "../nova_utils.ts";
+import { isWorkspace, wrapCommand } from "../nova_utils.ts";
 import { rangeToLspRange } from "../lsp_nova_conversions.ts";
 
 // @Panic: this is totally decoupled from typescript, so it could totally be native to Nova
@@ -11,8 +11,12 @@ export default function registerRename(client: LanguageClient) {
     wrapCommand(rename),
   );
 
-  async function rename(editor: TextEditor) {
+  async function rename(workspaceOrEditor: Workspace | TextEditor) {
     // Select full word. It will be shown in a palette so the user can review it
+
+    const editor = isWorkspace(workspaceOrEditor)
+      ? workspaceOrEditor.activeTextEditor
+      : workspaceOrEditor;
 
     editor.selectWordsContainingCursors();
 
@@ -52,7 +56,6 @@ export default function registerRename(client: LanguageClient) {
       nova.workspace.showWarningMessage("Couldn't rename symbol.");
       return;
     }
-    console.log(JSON.stringify(response));
 
     await applyWorkspaceEdit(response);
 

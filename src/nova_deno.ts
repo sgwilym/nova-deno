@@ -12,8 +12,8 @@ let client: LanguageClient | null = null;
 const compositeDisposable = new CompositeDisposable();
 
 export function activate() {
-  const inLog = nova.path.join(nova.workspace.path || "", "stdin.log");
-  const outLog = nova.path.join(nova.workspace.path || "", "stdout.log");
+  //const inLog = nova.path.join(nova.workspace.path || "", "stdin.log");
+  //const outLog = nova.path.join(nova.workspace.path || "", "stdout.log");
 
   // try
 
@@ -23,21 +23,20 @@ export function activate() {
     {
       type: "stdio",
       path: "/usr/bin/env",
-      args: ["bash", "-c", `tee "${inLog}" | deno lsp | tee "${outLog}"`],
+      //args: ["bash", "-c", `tee "${inLog}" | deno lsp | tee "${outLog}"`],
+      args: ["deno", "lsp"],
     },
     {
       syntaxes,
       initializationOptions: {
-        enable: true,
+        enable: nova.workspace.config.get("deno.enable", "boolean") ?? false,
         lint: true,
+        unstable: nova.workspace.config.get("deno.enable", "boolean") ?? false,
         suggest: {
           names: true,
           paths: true,
           autoImports: true,
           completeFunctionCalls: true,
-          imports: {
-            autoDiscover: true,
-          },
         },
         codeLens: {
           implementations: true,
@@ -55,14 +54,6 @@ export function activate() {
     compositeDisposable.add(registerCache(client));
     compositeDisposable.add(registerRenameSymbol(client));
 
-    client.onRequest("deno/virtualTextDocument", () => {
-      console.log("yo");
-    });
-
-    client.onNotification("deno/virtualTextDocument", () => {
-      console.log("yo");
-    });
-
     nova.workspace.onDidAddTextEditor((editor) => {
       const editorDisposable = new CompositeDisposable();
 
@@ -70,44 +61,6 @@ export function activate() {
       compositeDisposable.add(
         editor.onDidDestroy(() => editorDisposable.dispose()),
       );
-
-      if (editor.document.syntax && syntaxes.includes(editor.document.syntax)) {
-        nova.commands.invoke(
-          "co.gwil.deno.commands.cache",
-        );
-      }
-
-      // Caching deps
-
-      editorDisposable.add(
-        editor.document.onDidChangeSyntax(refreshDidStopChangingListener),
-      );
-
-      let didStopChangingListener = setupOnDidStopChangingListener();
-      compositeDisposable.add({
-        dispose() {
-          didStopChangingListener?.dispose();
-        },
-      });
-
-      function refreshDidStopChangingListener() {
-        didStopChangingListener?.dispose();
-        didStopChangingListener = setupOnDidStopChangingListener();
-      }
-
-      function setupOnDidStopChangingListener() {
-        if (
-          !(syntaxes as Array<string | null>).includes(editor.document.syntax)
-        ) {
-          return;
-        }
-
-        return editor.onDidStopChanging(async () => {
-          await nova.commands.invoke(
-            "co.gwil.deno.commands.cache",
-          );
-        });
-      }
 
       // Formatting
 
@@ -151,9 +104,11 @@ export function activate() {
         }
 
         return editor.onWillSave(async () => {
-          await nova.commands.invoke(
-            "co.gwil.deno.commands.formatDocument",
-          );
+          if (nova.config.get("deno.formatOnSave") === false) {
+            return;
+          }
+
+          await nova.commands.invoke("co.gwil.deno.commands.formatDocument");
         });
       }
     });

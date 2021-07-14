@@ -1,72 +1,41 @@
-<!--
-👋 Hello! As Nova users browse the extensions library, a good README can help them understand what your extension does, how it works, and what setup or configuration it may require.
+Very fast JavaScript and Typescript integration, powered by [Deno](https://deno.land).  
 
-Not every extension will need every item described below. Use your best judgement when deciding which parts to keep to provide the best experience for your new users.
+- Inline Typechecking and Intellisense for Javascript and Typescript!
+- Linting, reporting issues to the **Issues** bar!
+- Automatic formatting on save!
+- Remote module (e.g. `import { x } from "https://cdn.com/mod.ts"`) support!
 
-💡 Quick Tip! As you edit this README template, you can preview your changes by selecting **Extensions → Activate Project as Extension**, opening the Extension Library, and selecting "deno" in the sidebar.
+**This is version 0.1**. While the most important functions of Deno are integrated here, there are missing features and a few known bugs. This is a best-effort extension, but it might be good enough for now!
 
-Let's get started!
--->
+## Requirements 🎒
 
-<!--
-🎈 Include a brief description of the features your extension provides. For example:
--->
+To use this extension, you must have the Deno CLI installed (v.1.10.3 or above). [Here's how you can do that](https://deno.land/#installation).
 
-**deno** provides deep integration with **An Important Language**, including the most important feature, something that's really helpful, and _a little-known secret!_
+## Commands ⌨️
 
-<!--
-🎈 It can also be helpful to include a screenshot or GIF showing your extension in action:
--->
+- **Cache** - Cache all external dependencies
+- **Format Document** - Format with Deno's formatter
+- **Rename symbol** - Rename variables, functions, etc.
 
-![](https://nova.app/images/en/dark/editor.png)
+## Configuration options ⚙️
 
-## Requirements
+- You can enable/disable automatic formatting on save in the extension preferences.
+- You can de/activate Deno integration on a per-project basis in **Project → Project Settings...**.
+- Support for unstable APIs can also be configured on a per-project basis in **Project → Project Settings...**.
 
-<!--
-🎈 If your extension depends on external processes or tools that users will need to have, it's helpful to list those and provide links to their installers:
--->
+## Known bugs 🪳
 
-deno requires some additional tools to be installed on your Mac:
+There are a few bugs which are out of my hands. I'm doing my best to follow up with both Panic and the Deno team to resolve them.
 
-- [Node.js 8.2.0](https://nodejs.org) and NPM 5.2.0 or newer
+- Many code actions (e.g. automatic imports) do not work.
+- Autocompletions are only displayed when certain characters are input (`., \, ', /, @, <, #`).
+- The **Jump to definition** command does not work for values defined within external dependencies.
 
-<!--
-✨ Providing tips, tricks, or other guides for installing or configuring external dependencies can go a long way toward helping your users have a good setup experience:
--->
+## Mega Shoutouts 📣
 
-> To install the current stable version of Node, click the "Recommended for Most Users" button to begin the download. When that completes, double-click the **.pkg** installer to begin installation.
+Much of the code in this extension is based on — if not entirely lifted from — Cameron Little's [excellent Nova Typescript extension](https://github.com/apexskier/nova-typescript).
 
-## Usage
+## Contributing
 
-<!--
-🎈 If your extension provides features that are invoked manually, consider describing those options for users:
--->
 
-To run deno:
 
-- Select the **Editor → deno** menu item; or
-- Open the command palette and type `deno`
-
-<!--
-🎈 Alternatively, if your extension runs automatically (as in the case of a validator), consider showing users what they can expect to see:
--->
-
-deno runs any time you open a local project, automatically lints all open files, then reports errors and warnings in Nova's **Issues** sidebar and the editor gutter:
-
-![](https://nova.app/images/en/dark/tools/sidebars.png)
-
-### Configuration
-
-<!--
-🎈 If your extension offers global- or workspace-scoped preferences, consider pointing users toward those settings. For example:
--->
-
-To configure global preferences, open **Extensions → Extension Library...** then select deno's **Preferences** tab.
-
-You can also configure preferences on a per-project basis in **Project → Project Settings...**
-
-<!--
-👋 That's it! Happy developing!
-
-P.S. If you'd like, you can remove these comments before submitting your extension 😉
--->
