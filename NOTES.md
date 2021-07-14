@@ -2,6 +2,18 @@
 
 ## Next time
 
+- A logo that tells of this extension's 0.1-ness.
+
+## 14/7/20
+
+- Decided to just accept limitations for now. Am trying to follow up on bugs with both Deno team and Panic.
+- Made dependency caching an explicit command as it downloads third party code to your machine.
+- Did a bunch of extension config / README finessing
+
+--
+
+## Next time
+
 - Ran out of steam after seeing that I need some support from Panic to make this complete.
   - Maybe a lot. Just don't know how to proceed with some things that don't work.
   - I guess use tee + send to Panic...

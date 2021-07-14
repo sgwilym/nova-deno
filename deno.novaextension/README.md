@@ -1,7 +1,7 @@
-Very fast JavaScript and Typescript integration, powered by [Deno](https://deno.land).  
+Very fast JavaScript and Typescript integration, powered by [Deno](https://deno.land).
 
 - Inline Typechecking and Intellisense for Javascript and Typescript!
-- Linting, reporting issues to the **Issues** bar!
+- Code linting!
 - Automatic formatting on save!
 - Remote module (e.g. `import { x } from "https://cdn.com/mod.ts"`) support!
 
@@ -37,5 +37,4 @@ Much of the code in this extension is based on â€” if not entirely lifted from â
 
 ## Contributing
 
-
-
+This extension is itself a Deno project. Come fix bugs and add features with us!
