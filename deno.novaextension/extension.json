@@ -25,7 +25,7 @@
       "type": "boolean",
       "description": "Toggle automatic formatting on save.",
       "default": true
-    },
+    }
   ],
   
   "configWorkspace": [
@@ -66,7 +66,7 @@
         "filters": {
           "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
         }
-      },
+      }
     ]
   }
 }
