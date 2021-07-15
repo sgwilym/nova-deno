@@ -4,9 +4,9 @@
   "organization": "Sam Gwilym",
   "description": "Deno runtime support for Nova.",
   "version": "0.1",
-  "categories": ["languages", "formatters", "validators", "completions"],
+  "categories": ["languages", "formatters", "issues", "completions"],
   "repository": "https://github.com/sgwilym/nova-deno",
-  "issues": "https://github.com/sgwilym/nova-deno/issues",
+  "bugs": "https://github.com/sgwilym/nova-deno/issues",
 
   "main": "main.js",
 
