@@ -1,5 +1,3 @@
-/// <reference path="./nova_editor.d.ts" />
-
 import registerFormatDocument from "./commands/format_document.ts";
 import registerCache from "./commands/cache.ts";
 import registerRenameSymbol from "./commands/rename_symbol.ts";
