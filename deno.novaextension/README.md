@@ -5,7 +5,7 @@ Very fast JavaScript and Typescript integration, powered by [Deno](https://deno.
 - Automatic formatting on save!
 - Remote module (e.g. `import { x } from "https://cdn.com/mod.ts"`) support!
 
-**This is version 0.1**. While the most important functions of Deno are integrated here, there are missing features and a few known bugs. This is a best-effort extension, but it might be good enough for now!
+**This is version 0.1**. While the most important functions of Deno are integrated here, there are missing features and a few known bugs. This is a best-effort extension, but it might be good enough to start with!
 
 ## Requirements 🎒
 
@@ -37,4 +37,4 @@ Much of the code in this extension is based on — if not entirely lifted from �
 
 ## Contributing
 
-This extension is itself a Deno project. Come fix bugs and add features with us!
+This extension is itself a Deno project. [Come fix bugs and add features with us](https://github.com/sgwilym/nova-deno)!

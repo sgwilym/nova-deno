@@ -20,7 +20,7 @@
   
   "config": [
     {
-      "key": "deno.formatOnSave",
+      "key": "co.gwil.deno.formatOnSave",
       "title": "Format on save",
       "type": "boolean",
       "description": "Toggle automatic formatting on save.",
@@ -30,14 +30,14 @@
   
   "configWorkspace": [
     {
-      "key": "deno.enable",
+      "key": "co.gwil.deno.enable",
       "title": "Enable Deno",
       "type": "boolean",
       "description": "Turn Deno integration on. If you have the TypeScript extension installed, you'll need to disable it.",
       "default": false
     },
     {
-      "key": "deno.unstable",
+      "key": "co.gwil.deno.unstable",
       "title": "Support unstable Deno APIs",
       "type": "boolean",
       "default": false
@@ -55,14 +55,14 @@
       },
       {
         "title": "Rename Symbol",
-        "command": "co.gwil.deno.rename",
+        "command": "co.gwil.deno.commands.rename",
         "filters": {
           "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
         }
       },
       {
         "title": "Cache dependencies",
-        "command": "co.gwil.deno.cache",
+        "command": "co.gwil.deno.commands.cache",
         "filters": {
           "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
         }

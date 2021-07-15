@@ -29,9 +29,11 @@ export function activate() {
     {
       syntaxes,
       initializationOptions: {
-        enable: nova.workspace.config.get("deno.enable", "boolean") ?? false,
+        enable: nova.workspace.config.get("co.gwil.deno.enable", "boolean") ??
+          false,
         lint: true,
-        unstable: nova.workspace.config.get("deno.enable", "boolean") ?? false,
+        unstable: nova.workspace.config.get("co.gwil.deno.enable", "boolean") ??
+          false,
         suggest: {
           names: true,
           paths: true,
@@ -104,7 +106,7 @@ export function activate() {
         }
 
         return editor.onWillSave(async () => {
-          if (nova.config.get("deno.formatOnSave") === false) {
+          if (nova.config.get("co.gwil.deno.formatOnSave") === false) {
             return;
           }
 

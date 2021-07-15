@@ -7,7 +7,7 @@ import { rangeToLspRange } from "../lsp_nova_conversions.ts";
 
 export default function registerRename(client: LanguageClient) {
   return nova.commands.register(
-    "co.gwil.deno.rename",
+    "co.gwil.deno.commands.rename",
     wrapCommand(rename),
   );
 
