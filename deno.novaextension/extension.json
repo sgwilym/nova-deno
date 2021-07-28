@@ -3,7 +3,7 @@
   "name": "Deno",
   "organization": "Sam Gwilym",
   "description": "Deno runtime support for Nova.",
-  "version": "0.1",
+  "version": "0.2",
   "categories": ["languages", "formatters", "issues", "completions"],
   "repository": "https://github.com/sgwilym/nova-deno",
   "bugs": "https://github.com/sgwilym/nova-deno/issues",
@@ -20,27 +20,81 @@
   
   "config": [
     {
-      "key": "co.gwil.deno.formatOnSave",
-      "title": "Format on save",
+      "key": "co.gwil.deno.config.enableLsp",
+      "title": "Enable Deno Language features",
+      "description": "Turn Deno integration on. If you have the TypeScript extension installed, you'll need to disable it.",
       "type": "boolean",
-      "description": "Toggle automatic formatting on save.",
       "default": true
+    },
+    {
+      "key": "co.gwil.deno.config.enableLinting",
+      "title": "Enable linting",
+      "description": "Turn on Deno's built-in linting.",
+      "type": "boolean",
+      "default": true
+    },
+    {
+      "key": "co.gwil.deno.config.formatOnSave",
+      "title": "Format document on save",
+      "description": "Run Format Document command on file save.",
+      "type": "boolean",
+      "default": true
+    },
+    {
+      "key": "co.gwil.deno.config.enableUnstable",
+      "title": "Support unstable Deno APIs",
+      "type": "boolean",
+      "default": false
     }
   ],
   
   "configWorkspace": [
     {
-      "key": "co.gwil.deno.enable",
-      "title": "Enable Deno",
-      "type": "boolean",
-      "description": "Turn Deno integration on. If you have the TypeScript extension installed, you'll need to disable it.",
-      "default": false
+      "key": "co.gwil.deno.config.formatOnSave",
+      "title": "Format document on save",
+      "description": "Run Format Document command on file save.",
+      "type": "enum",
+      "values": [
+        ["null", "Inherit from Global Settings"],
+        ["false", "Disable"],
+        ["true", "Enable"]
+      ],
+      "default": "null"
     },
     {
-      "key": "co.gwil.deno.unstable",
+      "key": "co.gwil.deno.config.enableLsp",
+      "title": "Enable Deno Language features",
+      "description": "Turn Deno integration on. If you have the TypeScript extension installed, you'll need to disable it.",
+      "type": "enum",
+      "values": [
+        ["null", "Inherit from Global Settings"],
+        ["false", "Disable"],
+        ["true", "Enable"]
+      ],
+      "default": "null"
+    },
+    {
+      "key": "co.gwil.deno.config.enableLinting",
+      "title": "Enable linting",
+      "description": "Turn on Deno's built-in linting.",
+      "type": "enum",
+      "values": [
+        ["null", "Inherit from Global Settings"],
+        ["false", "Disable"],
+        ["true", "Enable"]
+      ],
+      "default": "null"
+    },
+    {
+      "key": "co.gwil.deno.config.enableUnstable",
       "title": "Support unstable Deno APIs",
-      "type": "boolean",
-      "default": false
+      "type": "enum",
+      "values": [
+        ["null", "Inherit from Global Settings"],
+        ["false", "Disable"],
+        ["true", "Enable"]
+      ],
+      "default": "null"
     }
   ],
 

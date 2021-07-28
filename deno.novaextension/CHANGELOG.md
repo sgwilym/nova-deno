@@ -1,3 +1,11 @@
-## Version 1.0
+## v0.2
 
-Initial release
+- Added global and per-workspace configs for: 
+  - Language features
+  - Linting
+  - Format on save
+  - Unstable API support.
+
+## v0.1
+
+- Initial release

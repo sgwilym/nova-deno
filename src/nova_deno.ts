@@ -1,6 +1,7 @@
 import registerFormatDocument from "./commands/format_document.ts";
 import registerCache from "./commands/cache.ts";
 import registerRenameSymbol from "./commands/rename_symbol.ts";
+import { getOverridableBoolean } from "./preferences.ts";
 
 export const syntaxes = ["typescript", "tsx", "javascript", "jsx"];
 
@@ -27,11 +28,9 @@ export function activate() {
     {
       syntaxes,
       initializationOptions: {
-        enable: nova.workspace.config.get("co.gwil.deno.enable", "boolean") ??
-          false,
-        lint: true,
-        unstable: nova.workspace.config.get("co.gwil.deno.enable", "boolean") ??
-          false,
+        enable: getOverridableBoolean("co.gwil.deno.config.enableLsp"),
+        lint: getOverridableBoolean("co.gwil.deno.config.enableLinting"),
+        unstable: getOverridableBoolean("co.gwil.deno.config.enableUnstable"),
         suggest: {
           names: true,
           paths: true,
@@ -104,7 +103,7 @@ export function activate() {
         }
 
         return editor.onWillSave(async () => {
-          if (nova.config.get("co.gwil.deno.formatOnSave") === false) {
+          if (nova.config.get("co.gwil.deno.config.formatOnSave") === false) {
             return;
           }
 
