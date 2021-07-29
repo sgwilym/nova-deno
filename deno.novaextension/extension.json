@@ -4,7 +4,7 @@
   "organization": "Sam Gwilym",
   "description": "Deno runtime support for Nova.",
   "version": "0.2",
-  "categories": ["languages", "formatters", "issues", "completions"],
+  "categories": ["languages", "formatters", "issues", "completions", "tasks"],
   "repository": "https://github.com/sgwilym/nova-deno",
   "bugs": "https://github.com/sgwilym/nova-deno/issues",
 
@@ -12,8 +12,7 @@
 
   "entitlements": {
     "process": true,
-    "filesystem": "readwrite",
-    "requests": true
+    "filesystem": "readwrite"
   },
 
   "activationEvents": ["onLanguage:typescript", "onLanguage:tsx", "onLanguage:javascript", "onLanguage:jsx"],

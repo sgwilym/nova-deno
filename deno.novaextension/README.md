@@ -4,8 +4,9 @@ Very fast JavaScript and Typescript integration, powered by [Deno](https://deno.
 - Code linting!
 - Automatic formatting on save!
 - Remote module (e.g. `import { x } from "https://cdn.com/mod.ts"`) support!
+- Task templates for `deno run` and `deno` bundle!
 
-**This is version 0.1**. While the most important functions of Deno are integrated here, there are missing features and a few known bugs. This is a best-effort extension, but it might be good enough to start with!
+**This is pre-v1.0**. While the most important functions of Deno are integrated here, there are missing features and a few known bugs. This is a best-effort extension, but it might be good enough to start with!
 
 ## Requirements 🎒
 
@@ -19,9 +20,12 @@ To use this extension, you must have the Deno CLI installed (v.1.10.3 or above).
 
 ## Configuration options ⚙️
 
-- You can enable/disable automatic formatting on save in the extension preferences.
-- You can de/activate Deno integration on a per-project basis in **Project → Project Settings...**.
-- Support for unstable APIs can also be configured on a per-project basis in **Project → Project Settings...**.
+All of the below can be configured at a global and per-project basis (via **Project → Project Settings...**).
+
+- Format on save
+- Deno language features
+- Linting
+- Unstable Deno APIs
 
 ## Known bugs 🪳
 
