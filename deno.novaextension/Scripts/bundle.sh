@@ -1,0 +1,1 @@
+deno bundle $([[ ! -z "$CERT" ]] && echo " --cert==$CERT")$([[ ! -z "$CONFIG" ]] && echo " --config==$CONFIG")$([[ ! -z "$IMPORT_MAP" ]] && echo " --import-map==$IMPORT_MAP")$([[ ! -z "$CUSTOM_OPTIONS" ]] && echo " $CUSTOM_OPTIONS") $SOURCE_FILE $OUTFILE

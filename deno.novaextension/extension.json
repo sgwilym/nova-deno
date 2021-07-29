@@ -122,5 +122,201 @@
         }
       }
     ]
+  },
+  
+  "taskTemplates": {
+    "run": {
+      "name": "Run",
+      "description": "Run a JavaScript or TypeScript program.",
+      "persistent": true,
+      "tasks": {
+        "run": {
+          "shell": true,
+          "command": "Scripts/run.sh",
+          "env": {
+            "ALLOW_ALL": "${Config:deno.run.allow.all}",
+            "ALLOW_READ": "--allow-read=${Config:deno.run.allow.read}",
+            "ALLOW_WRITE": "--allow-write=${Config:deno.run.allow.write}",
+            "ALLOW_NET":"--allow-net=${Config:deno.run.allow.network}",
+            "ALLOW_RUN":"--allow-run=${Config:deno.run.allow.run}",
+            "ALLOW_ENV":"--allow-env=${Config:deno.run.allow.env}",
+            "CUSTOM_OPTIONS":"${Config:deno.run.custom-options}",
+            "SCRIPT":"$(Config:deno.run.script)",
+            "USER_ARGS":"${Config:deno.run.user-args}",
+            "CONFIG":"${Config:deno.run.config}",
+            "IMPORT_MAP":"${Config:deno.run.import-map}",
+            "CERT":"${Config:deno.run.cert}"
+          }
+          
+        }
+      },
+      "config": [
+        {
+          "key": "deno.run.script",
+          "title": "Script path",
+          "type": "path",
+          "relative": true,
+          "placeholder": "script.ts",
+          "required": true,
+          "filetype": ["ts"]
+        },
+        {
+          "title": "Permissions",
+          "description": "Script permissions",
+          "type": "section",
+          "children": [
+            {
+              "key": "deno.run.allow.all",
+              "title": "Allow all permissions",
+              "description": "Overrides any other permission preferences.",
+              "type": "boolean",
+              "default": false
+            },
+            {
+              "key": "deno.run.allow.read",
+              "title": "Allow file system read access",
+              "type": "boolean",
+              "default": false
+            },
+            {
+              "key": "deno.run.allow.write",
+              "title": "Allow file system write access",
+              "type": "boolean",
+              "default": false
+            },
+            {
+              "key": "deno.run.allow.network",
+              "title": "Allow network access",
+              "type": "boolean",
+              "default": false
+            },
+            {
+              "key": "deno.run.allow.run",
+              "title": "Allow running subprocesses",
+              "type": "boolean",
+              "default": false
+            },
+            {
+              "key": "deno.run.allow.env",
+              "title": "Allow environment access",
+              "type": "boolean",
+              "default": false
+            }
+          ]
+        },
+        {
+          "key": "deno.run.config",
+          "title": "Config",
+          "description": "Optional tsconfig.json configuration file.",
+          "type": "path",
+          "filetype": ["json"]
+        },
+        {
+          "key": "deno.run.import-map",
+          "title": "Import map",
+          "link": "https://deno.land/manual/linking_to_external_code/import_maps",
+          "description": "Load import map file from local file or remote URL.",
+          "type": "string"
+        },
+        {
+          "key": "deno.run.cert",
+          "title": "Certificate authority",
+          "description": "Load a certificate authority from PEM encoded file",
+          "type": "path"
+        },
+        {
+          "key": "deno.run.custom-options",
+          "title": "Custom options",
+          "description": "Other options to pass to Deno's run command.",
+          "type": "string"
+        },
+        {
+          "key": "deno.run.user-args",
+          "title": "User arguments",
+          "description": "Arguments to pass to the script being run.",
+          "type": "string"
+        }
+      ]
+      
+  
+      
+    }, 
+    "bundle": {
+      "name": "Bundle",
+      "description": "Output a single JavaScript file with all dependencies.",
+      "persistent": false,
+      "tasks": {
+        "run": {
+          "shell": true,
+          "command": "Scripts/bundle.sh",
+          "env": {
+            "CUSTOM_OPTIONS": "$(Config:deno.bundle.custom-options)",   
+            "SOURCE_FILE": "$(Config:deno.bundle.source-file)",
+            "OUT_FILE": "$(Config:deno.bundle.out-file-dir)/$(Config:deno.bundle.out-file-name)",
+            "CONFIG":"${Config:deno.run.config}",
+            "IMPORT_MAP":"${Config:deno.run.import-map}",
+            "CERT":"${Config:deno.run.cert}"
+          }
+        }
+      },
+      "config": [
+        {
+          "key": "deno.bundle.source-file",
+          "title": "Source file",
+          "type": "path",
+          "relative": true,
+          "placeholder": "entry.ts",
+          "required": true,
+          "filetype": ["ts"]
+        },
+        
+        {
+          "key": "deno.bundle.out-file-dir",
+          "title": "Output file directory",
+          "type": "path",
+          "relative": false,
+          "placeholder": "script.ts",
+          "required": true,
+          "allowFiles": false,
+          "allowFolders": true
+        },
+        {
+          "key": "deno.bundle.out-file-name",
+          "title": "Output file name",
+          "type": "string",
+          "placeholder": "outfile.ts",
+          "required": true
+        },
+        {
+          "key": "deno.bundle.import-map",
+          "title": "Import map",
+          "link": "https://deno.land/manual/linking_to_external_code/import_maps",
+          "description": "Load import map file from local file or remote URL.",
+          "type": "string"
+        },
+        {
+          "key": "deno.bundle.cert",
+          "title": "Certificate authority",
+          "description": "Load a certificate authority from PEM encoded file",
+          "type": "path"
+        },
+        {
+          "key": "deno.bundle.custom-options",
+          "title": "Custom options",
+          "description": "Other options to pass to Deno's run command.",
+          "type": "string"
+        },
+        {
+          "key": "deno.bundle.custom-options",
+          "title": "Custom arguments",
+          "description": "Other options to pass to Deno's bundle command.",
+          "type": "string"
+        }
+      ]
+      
+  
+      
+    }
+    
   }
 }

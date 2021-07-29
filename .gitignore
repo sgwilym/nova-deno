@@ -1,3 +1,6 @@
+.DS_Store
 deno.novaextension/Scripts/main.js
 stdin.log
 stdout.log
+.nova/Tasks
+deno.novaextension/.nova

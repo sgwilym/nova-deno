@@ -1,5 +1,3 @@
-/// <reference path="./nova_editor.d.ts" />
-
 import { lsp } from '../deps.ts'
 import { lspRangeToRange } from "./lsp_nova_conversions.ts";
 

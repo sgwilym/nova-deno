@@ -1,5 +1,10 @@
 # Working Notes
 
+## 28/7/20
+
+- Added fine-grained options for the extension which can be defined at a global and per-workspace level. Should make using this with the Typescript extension installed a _little_ better (though I need to request a per-project off switch for the TS extension).
+- Tried to add tasks for Deno: run and bundle. Complete nightmare piping the options into the commands, had to resort to some ugly looking shell scripts.
+
 ## Next time
 
 - A logo that tells of this extension's 0.1-ness.
