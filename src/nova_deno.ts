@@ -31,6 +31,8 @@ export function activate() {
         enable: getOverridableBoolean("co.gwil.deno.config.enableLsp"),
         lint: getOverridableBoolean("co.gwil.deno.config.enableLinting"),
         unstable: getOverridableBoolean("co.gwil.deno.config.enableUnstable"),
+        config: nova.workspace.config.get("co.gwil.deno.config.tsconfig"),
+        importMap: nova.workspace.config.get("co.gwil.deno.config.import-map"),
         suggest: {
           names: true,
           paths: true,
@@ -38,6 +40,7 @@ export function activate() {
           completeFunctionCalls: true,
         },
         codeLens: {
+          test: true,
           implementations: true,
           references: true,
           referencesAllFunctions: true,

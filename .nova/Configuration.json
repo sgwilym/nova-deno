@@ -3,6 +3,7 @@
   "co.gwil.deno.config.enableLinting" : "true",
   "co.gwil.deno.config.enableLsp" : "true",
   "co.gwil.deno.config.formatOnSave" : "true",
+  "co.gwil.deno.config.tsconfig" : "dom.tsconfig.json",
   "co.gwil.deno.enable" : true,
   "deno.enable" : true,
   "workspace.art_style" : 0,

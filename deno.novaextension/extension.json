@@ -94,6 +94,21 @@
         ["true", "Enable"]
       ],
       "default": "null"
+    },
+    {
+      "key": "co.gwil.deno.config.tsconfig",
+      "title": "Config",
+      "description": "Optional tsconfig.json configuration file.",
+      "type": "path",
+      "relative": true,
+      "filetype": ["json"]
+    },
+    {
+      "key": "co.gwil.deno.config.import-map",
+      "title": "Import map",
+      "link": "https://deno.land/manual/linking_to_external_code/import_maps",
+      "description": "Load import map file from local file or remote URL.",
+      "type": "string"
     }
   ],
 
@@ -311,10 +326,7 @@
           "description": "Other options to pass to Deno's bundle command.",
           "type": "string"
         }
-      ]
-      
-  
-      
+      ]    
     }
     
   }

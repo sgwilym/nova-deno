@@ -27,6 +27,11 @@ All of the below can be configured at a global and per-project basis (via **Proj
 - Linting
 - Unstable Deno APIs
 
+The following can be configured on a per-project lever:
+
+- Import map
+- tsconfig.json
+
 ## Known bugs 🪳
 
 There are a few bugs which are out of my hands. I'm doing my best to follow up with both Panic and the Deno team to resolve them.

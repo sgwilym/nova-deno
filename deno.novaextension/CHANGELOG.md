@@ -1,3 +1,7 @@
+## v0.3
+
+- Added per-workspace configs for import maps and tsconfig.json for the LSP to use.
+
 ## v0.2
 
 - Added global and per-workspace configs for: 
