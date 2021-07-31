@@ -1,3 +1,7 @@
+## v0.3.2
+
+- Quick update to fix a submission error.
+
 ## v0.3.1
 
 - Refactored task templates so that they succeed more often and are easier to manage!

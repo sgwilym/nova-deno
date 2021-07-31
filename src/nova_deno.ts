@@ -11,8 +11,7 @@ const formatOnSaveKey = "co.gwil.deno.config.formatDocumentOnSave";
 let client: LanguageClient | null = null;
 const compositeDisposable = new CompositeDisposable();
 
-export async function activate() {
-
+export function activate() {
   client = new LanguageClient(
     "co.gwil.deno",
     "Deno Language Server",
