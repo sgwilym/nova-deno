@@ -1,9 +1,9 @@
-import { lsp } from '../deps.ts'
+import { lsp } from "../deps.ts";
 import { lspRangeToRange } from "./lsp_nova_conversions.ts";
 
 export default function applyLSPEdits(
   editor: TextEditor,
-  edits: Array<lsp.TextEdit>
+  edits: Array<lsp.TextEdit>,
 ) {
   editor.edit((textEditorEdit) => {
     for (const change of edits.reverse()) {

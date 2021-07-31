@@ -3,7 +3,7 @@ import { lsp } from "../deps.ts";
 // this could really use some tests
 export function rangeToLspRange(
   document: TextDocument,
-  range: Range
+  range: Range,
 ): lsp.Range | null {
   const fullContents = document.getTextInRange(new Range(0, document.length));
   let chars = 0;
@@ -27,7 +27,7 @@ export function rangeToLspRange(
 // this could really use some tests
 export function lspRangeToRange(
   document: TextDocument,
-  range: lsp.Range
+  range: lsp.Range,
 ): Range {
   const fullContents = document.getTextInRange(new Range(0, document.length));
   let rangeStart = 0;

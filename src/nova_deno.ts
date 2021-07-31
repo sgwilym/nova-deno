@@ -2,6 +2,7 @@ import registerFormatDocument from "./commands/format_document.ts";
 import registerCache from "./commands/cache.ts";
 import registerRenameSymbol from "./commands/rename_symbol.ts";
 import { getOverridableBoolean } from "./preferences.ts";
+import { registerBundleTask, registerRunTask } from "./tasks.ts";
 
 export const syntaxes = ["typescript", "tsx", "javascript", "jsx"];
 
@@ -10,11 +11,7 @@ const formatOnSaveKey = "co.gwil.deno.config.formatDocumentOnSave";
 let client: LanguageClient | null = null;
 const compositeDisposable = new CompositeDisposable();
 
-export function activate() {
-  //const inLog = nova.path.join(nova.workspace.path || "", "stdin.log");
-  //const outLog = nova.path.join(nova.workspace.path || "", "stdout.log");
-
-  // try
+export async function activate() {
 
   client = new LanguageClient(
     "co.gwil.deno",
@@ -51,6 +48,9 @@ export function activate() {
 
   try {
     let disposed = false;
+
+    compositeDisposable.add(registerRunTask());
+    compositeDisposable.add(registerBundleTask());
 
     compositeDisposable.add(registerFormatDocument(client));
     compositeDisposable.add(registerCache(client));
