@@ -3,7 +3,7 @@
   "name": "Deno",
   "organization": "Sam Gwilym",
   "description": "Deno runtime support for Nova.",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "categories": ["languages", "formatters", "issues", "completions", "tasks"],
   "repository": "https://github.com/sgwilym/nova-deno",
   "bugs": "https://github.com/sgwilym/nova-deno/issues",

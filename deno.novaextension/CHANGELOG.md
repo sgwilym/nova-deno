@@ -1,3 +1,8 @@
+## v0.3.3
+
+- Fixes an issue where enabling network access in the Run task passed the wrong flag (thanks [jaydenseric](https://github.com/jaydenseric)!)
+- Stops the Deno LSP from printing all its logs as errors in the extension console.
+
 ## v0.3.2
 
 - Quick update to fix a submission error.
