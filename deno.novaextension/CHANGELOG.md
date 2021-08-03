@@ -1,3 +1,8 @@
+## v0.3.4
+
+- Makes sure some fixes are actually included in the built extension.
+- Added a funding link.
+
 ## v0.3.3
 
 - Fixes an issue where enabling network access in the Run task passed the wrong flag (thanks [jaydenseric](https://github.com/jaydenseric)!)
