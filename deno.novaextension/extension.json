@@ -187,7 +187,7 @@
               "default": false
             },
             {
-              "key": "co.gwil.deno.tasks.run.config.allow.network",
+              "key": "co.gwil.deno.tasks.run.config.allow.net",
               "title": "Allow network access",
               "type": "boolean",
               "default": false

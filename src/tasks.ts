@@ -26,7 +26,7 @@ class DenoRunTaskAssistant implements TaskAssistant {
     const permissionTuples = ([
       ["co.gwil.deno.tasks.run.config.allow.read", "--allow-read"],
       ["co.gwil.deno.tasks.run.config.allow.write", "--allow-write"],
-      ["co.gwil.deno.tasks.run.config.allow.network", "--allow-network"],
+      ["co.gwil.deno.tasks.run.config.allow.net", "--allow-net"],
       ['"co.gwil.deno.tasks.run.config.allow.run"', "--allow-run"],
       ["co.gwil.deno.tasks.run.config.allow.env", "allow-env"],
     ] as [string, string][]).map(([key, flag]) => configToMaybeFlag(key, flag))
