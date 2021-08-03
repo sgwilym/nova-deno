@@ -19,7 +19,7 @@ export function activate() {
       type: "stdio",
       path: "/usr/bin/env",
       //args: ["bash", "-c", `tee "${inLog}" | deno lsp | tee "${outLog}"`],
-      args: ["deno", "lsp"],
+      args: ["deno", "lsp", "--quiet"],
     },
     {
       syntaxes,
