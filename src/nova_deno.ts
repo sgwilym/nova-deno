@@ -105,7 +105,9 @@ export function activate() {
         }
 
         return editor.onWillSave(async () => {
-          if (nova.config.get("co.gwil.deno.config.formatOnSave") === false) {
+          if (
+            getOverridableBoolean("co.gwil.deno.config.formatOnSave") === false
+          ) {
             return;
           }
 
