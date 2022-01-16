@@ -1,7 +1,14 @@
 import { lsp } from "../../deps.ts";
-import applyWorkspaceEdit from "../apply_workspace_edit.ts";
-import { isWorkspace, wrapCommand } from "../nova_utils.ts";
-import { rangeToLspRange } from "../lsp_nova_conversions.ts";
+import {
+  applyWorkspaceEdit,
+  isWorkspace,
+  LanguageClient,
+  nova,
+  rangeToLspRange,
+  TextEditor,
+  Workspace,
+  wrapCommand,
+} from "../nova_utils.ts";
 
 // @Panic: this is totally decoupled from typescript, so it could totally be native to Nova
 

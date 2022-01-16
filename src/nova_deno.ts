@@ -1,7 +1,12 @@
 import registerFormatDocument from "./commands/format_document.ts";
 import registerCache from "./commands/cache.ts";
 import registerRenameSymbol from "./commands/rename_symbol.ts";
-import { getOverridableBoolean } from "./preferences.ts";
+import {
+  CompositeDisposable,
+  getOverridableBoolean,
+  LanguageClient,
+  nova,
+} from "./nova_utils.ts";
 import { registerBundleTask, registerRunTask } from "./tasks.ts";
 
 export const syntaxes = ["typescript", "tsx", "javascript", "jsx"];

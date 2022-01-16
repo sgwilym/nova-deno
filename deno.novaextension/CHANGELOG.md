@@ -5,8 +5,10 @@
 
 ## v0.3.3
 
-- Fixes an issue where enabling network access in the Run task passed the wrong flag (thanks [jaydenseric](https://github.com/jaydenseric)!)
-- Stops the Deno LSP from printing all its logs as errors in the extension console.
+- Fixes an issue where enabling network access in the Run task passed the wrong
+  flag (thanks [jaydenseric](https://github.com/jaydenseric)!)
+- Stops the Deno LSP from printing all its logs as errors in the extension
+  console.
 
 ## v0.3.2
 
@@ -14,7 +16,8 @@
 
 ## v0.3.1
 
-- Refactored task templates so that they succeed more often and are easier to manage!
+- Refactored task templates so that they succeed more often and are easier to
+  manage!
 
 ## v0.3
 

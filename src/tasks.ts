@@ -1,12 +1,20 @@
-import "https://cdn.skypack.dev/@types/nova-editor-node?dts";
+import {
+  Configuration,
+  nova,
+  TaskActionResolveContext,
+  TaskAssistant,
+  TaskProcessAction,
+  Transferrable,
+} from "./nova_utils.ts";
 
 class DenoRunTaskAssistant implements TaskAssistant {
   provideTasks() {
     return [];
   }
 
-  resolveTaskAction<T extends Transferrable>(ctx: TaskActionResolveContext<T>) {
-    const config: Configuration = (ctx).config;
+  resolveTaskAction(ctx: TaskActionResolveContext<Transferrable>) {
+    const config = ctx.config as Configuration;
+
     const configToMaybeFlag = (
       configKey: string,
       flag: string,
@@ -90,7 +98,7 @@ class DenoBundleTaskAssistant implements TaskAssistant {
   }
 
   resolveTaskAction<T extends Transferrable>(ctx: TaskActionResolveContext<T>) {
-    const config: Configuration = (ctx).config;
+    const config = (ctx).config as Configuration;
 
     const sourceFile =
       config.get("co.gwil.deno.tasks.bundle.config.source-file", "string") ||

@@ -1,7 +1,13 @@
 import { lsp } from "../../deps.ts";
-import { wrapCommand } from "../nova_utils.ts";
-import applyLSPEdits from "../apply_lsp_edits.ts";
-import { isWorkspace } from "../nova_utils.ts";
+import {
+  applyLSPEdits,
+  isWorkspace,
+  LanguageClient,
+  nova,
+  TextEditor,
+  Workspace,
+  wrapCommand,
+} from "../nova_utils.ts";
 
 export default function registerFormatDocument(client: LanguageClient) {
   return nova.commands.register(

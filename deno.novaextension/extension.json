@@ -14,7 +14,7 @@
     "process": true,
     "filesystem": "readwrite"
   },
-  
+
   "funding": "https://github.com/sponsors/sgwilym",
 
   "activationEvents": [
