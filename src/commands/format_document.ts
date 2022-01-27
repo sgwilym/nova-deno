@@ -40,6 +40,6 @@ export default function registerFormatDocument(client: LanguageClient) {
       return;
     }
 
-    applyLSPEdits(editor, changes);
+    await applyLSPEdits(editor, changes);
   }
 }
