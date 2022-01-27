@@ -209,13 +209,6 @@
           ]
         },
         {
-          "key": "co.gwil.deno.tasks.run.config.config",
-          "title": "Config",
-          "description": "Optional tsconfig.json configuration file.",
-          "type": "path",
-          "filetype": ["json"]
-        },
-        {
           "key": "co.gwil.deno.tasks.run.config.import-map",
           "title": "Import map",
           "link": "https://deno.land/manual/linking_to_external_code/import_maps",
