@@ -1,3 +1,12 @@
+## v0.4.0
+
+- Added support for import suggestions!
+- Removed configuration file option (Deno will detect it automatically as of
+  v1.18)
+- Added "Restart Deno LSP server" command.
+- Added JSON and JSONC as syntaxes this extension can use.
+- Fixed a bug where formatting a document would hang indefinitely.
+
 ## v0.3.4
 
 - Makes sure some fixes are actually included in the built extension.
