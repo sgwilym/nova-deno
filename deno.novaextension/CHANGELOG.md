@@ -1,3 +1,7 @@
+## v0.4.1
+
+- Fix issue where formatting on save could not be configured at project level.
+
 ## v0.4.0
 
 - Added support for import suggestions!
