@@ -9,7 +9,15 @@ import {
 } from "./nova_utils.ts";
 import { registerBundleTask, registerRunTask } from "./tasks.ts";
 
-export const syntaxes = ["typescript", "tsx", "javascript", "jsx"];
+export const syntaxes = [
+  "typescript",
+  "tsx",
+  "javascript",
+  "jsx",
+  "json",
+  "jsonc",
+  "markdown",
+];
 
 const formatOnSaveKey = "co.gwil.deno.config.formatDocumentOnSave";
 
