@@ -47,12 +47,6 @@ export function activate() {
           autoImports: true,
           completeFunctionCalls: true,
         },
-        codeLens: {
-          test: true,
-          implementations: true,
-          references: true,
-          referencesAllFunctions: true,
-        },
       },
     },
   );
