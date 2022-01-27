@@ -51,6 +51,23 @@
       "title": "Support unstable Deno APIs",
       "type": "boolean",
       "default": false
+    },
+    {
+      "title": "Import suggestions",
+      "type": "section",
+      "description": "Deno is able to provide completions for URL imports. Because remote servers could provide false suggestions in an attempty to get you to run untrusted code, you must explicitly indicate trust for each registry. Putting the same registry in both of these sections will lead to unexpected results!",
+      "children": [
+        {
+          "key": "co.gwil.deno.config.trustedImportHosts",
+          "title": "Trusted hosts",
+          "type": "stringArray"
+        },
+        {
+          "key": "co.gwil.deno.config.untrustedImportHosts",
+          "title": "Untrusted hosts",
+          "type": "stringArray"
+        }
+      ]
     }
   ],
 
@@ -103,14 +120,6 @@
       "default": "null"
     },
     {
-      "key": "co.gwil.deno.config.tsconfig",
-      "title": "Config",
-      "description": "Optional tsconfig.json configuration file.",
-      "type": "path",
-      "relative": true,
-      "filetype": ["json"]
-    },
-    {
       "key": "co.gwil.deno.config.import-map",
       "title": "Import map",
       "link": "https://deno.land/manual/linking_to_external_code/import_maps",
@@ -141,6 +150,10 @@
         "filters": {
           "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
         }
+      },
+      {
+        "title": "Restart Deno LSP server",
+        "command": "co.gwil.deno.commands.restartServer"
       }
     ]
   },

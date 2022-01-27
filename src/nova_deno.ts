@@ -1,30 +1,11 @@
-import registerFormatDocument from "./commands/format_document.ts";
-import registerCache from "./commands/cache.ts";
-import registerRenameSymbol from "./commands/rename_symbol.ts";
-import {
-  CompositeDisposable,
-  getOverridableBoolean,
-  LanguageClient,
-  nova,
-} from "./nova_utils.ts";
+import { CompositeDisposable, nova } from "./nova_utils.ts";
 import { registerBundleTask, registerRunTask } from "./tasks.ts";
+import { makeClientDisposable } from "./client_disposable.ts";
 
-export const syntaxes = [
-  "typescript",
-  "tsx",
-  "javascript",
-  "jsx",
-  "json",
-  "jsonc",
-  "markdown",
-];
-
-const formatOnSaveKey = "co.gwil.deno.config.formatDocumentOnSave";
-
-let client: LanguageClient | null = null;
 const compositeDisposable = new CompositeDisposable();
 
 export function activate() {
+<<<<<<< ours
   client = new LanguageClient(
     "co.gwil.deno",
     "Deno Language Server",
@@ -120,33 +101,30 @@ export function activate() {
           await nova.commands.invoke("co.gwil.deno.commands.formatDocument");
         });
       }
+=======
+  function restartOnConfigChange(key: string) {
+    return nova.config.onDidChange(key, () => {
+      nova.commands.invoke("co.gwil.deno.commands.restartServer");
+>>>>>>> theirs
     });
-
-    compositeDisposable.add(
-      client?.onDidStop((err) => {
-        if (disposed && !err) {
-          return;
-        }
-      }),
-    );
-
-    compositeDisposable.add({
-      dispose() {
-        disposed = true;
-      },
-    });
-
-    client.start();
-
-    // Add the client to the subscriptions to be cleaned up
-    nova.subscriptions.add(compositeDisposable);
-  } catch (err) {
-    // If the .start() method throws, it's likely because the path to the language server is invalid
-
-    if (nova.inDevMode()) {
-      console.error(err);
-    }
   }
+
+  const clientDisposable = makeClientDisposable(compositeDisposable);
+
+  compositeDisposable.add(clientDisposable);
+
+  compositeDisposable.add(registerRunTask());
+  compositeDisposable.add(registerBundleTask());
+
+  compositeDisposable.add(
+    restartOnConfigChange("co.gwil.deno.config.trustedImportHosts"),
+  );
+
+  compositeDisposable.add(
+    restartOnConfigChange("co.gwil.deno.config.untrustedImportHosts"),
+  );
+
+  nova.subscriptions.add(compositeDisposable);
 }
 
 export function deactivate() {
