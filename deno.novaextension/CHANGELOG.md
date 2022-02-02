@@ -1,3 +1,8 @@
+## v0.4.2
+
+- Now properly restarts LSP server when changing global and per-project settings
+  in Nova.
+
 ## v0.4.1
 
 - Fix issue where formatting on save could not be configured at project level.

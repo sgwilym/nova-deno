@@ -4,13 +4,22 @@ import { makeClientDisposable } from "./client_disposable.ts";
 
 const compositeDisposable = new CompositeDisposable();
 
-export function activate() {
-  function restartOnConfigChange(key: string) {
-    return nova.config.onDidChange(key, () => {
-      nova.commands.invoke("co.gwil.deno.commands.restartServer");
-    });
-  }
+const configRestartKeys = [
+  "co.gwil.deno.config.enableLsp",
+  "co.gwil.deno.config.enableLinting",
+  "co.gwil.deno.config.enableUnstable",
+  "co.gwil.deno.config.trustedImportHosts",
+  "co.gwil.deno.config.untrustedImportHosts",
+];
 
+const workspaceConfigRestartKeys = [
+  "co.gwil.deno.config.enableLsp",
+  "co.gwil.deno.config.enableLinting",
+  "co.gwil.deno.config.enableUnstable",
+  "co.gwil.deno.config.import-map",
+];
+
+export function activate() {
   const clientDisposable = makeClientDisposable(compositeDisposable);
 
   compositeDisposable.add(clientDisposable);
@@ -18,12 +27,18 @@ export function activate() {
   compositeDisposable.add(registerRunTask());
   compositeDisposable.add(registerBundleTask());
 
-  compositeDisposable.add(
-    restartOnConfigChange("co.gwil.deno.config.trustedImportHosts"),
+  const configRestartDisposables = restartServerOnConfigChanges(
+    configRestartKeys,
   );
 
-  compositeDisposable.add(
-    restartOnConfigChange("co.gwil.deno.config.untrustedImportHosts"),
+  const workspaceRestartDisposables = restartServerOnWorkspaceConfigChanges(
+    workspaceConfigRestartKeys,
+  );
+
+  [...configRestartDisposables, ...workspaceRestartDisposables].forEach(
+    (disposable) => {
+      compositeDisposable.add(disposable);
+    },
   );
 
   nova.subscriptions.add(compositeDisposable);
@@ -31,4 +46,20 @@ export function activate() {
 
 export function deactivate() {
   compositeDisposable.dispose();
+}
+
+function restartServerOnConfigChanges(keys: string[]) {
+  return keys.map((key) => {
+    return nova.config.onDidChange(key, () => {
+      nova.commands.invoke("co.gwil.deno.commands.restartServer");
+    });
+  });
+}
+
+function restartServerOnWorkspaceConfigChanges(keys: string[]) {
+  return keys.map((key) => {
+    return nova.workspace.config.onDidChange(key, () => {
+      nova.commands.invoke("co.gwil.deno.commands.restartServer");
+    });
+  });
 }
