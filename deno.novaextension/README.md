@@ -41,17 +41,13 @@ All of the below can be configured at a global and per-project basis (via
 All of those can be defined at a per-project level, including an import map to
 use.
 
-## Known bugs 🪳
+## Known limitations
 
-There are a few bugs which are out of my hands. I'm doing my best to follow up
-with both Panic and the Deno team to resolve them.
+There are a few limitations which I'm doing my best to resolve with the help of
+Panic.
 
-- Many code actions (e.g. automatic imports) do not work.
-- Autocompletions are only displayed when certain characters are input
-  (`., \, ', /, @, <, #`).
 - The **Jump to definition** command does not work for values defined within
   external dependencies.
-- JSDocs are not displayed in hovercards
 
 ## Mega Shoutouts 📣
 
