@@ -1,5 +1,9 @@
 import { CompositeDisposable, nova } from "./nova_utils.ts";
-import { registerBundleTask, registerRunTask } from "./tasks.ts";
+import {
+  registerBundleTask,
+  registerDenoTasks,
+  registerRunTask,
+} from "./tasks.ts";
 import { makeClientDisposable } from "./client_disposable.ts";
 
 const compositeDisposable = new CompositeDisposable();
@@ -24,6 +28,7 @@ export function activate() {
 
   compositeDisposable.add(clientDisposable);
 
+  compositeDisposable.add(registerDenoTasks());
   compositeDisposable.add(registerRunTask());
   compositeDisposable.add(registerBundleTask());
 
