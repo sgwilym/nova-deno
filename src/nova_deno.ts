@@ -1,4 +1,4 @@
-import { CompositeDisposable, nova } from "./nova_utils.ts";
+import { CompositeDisposable, FileSystem, nova } from "./nova_utils.ts";
 import {
   registerBundleTask,
   registerDenoTasks,
@@ -7,6 +7,7 @@ import {
 import { makeClientDisposable } from "./client_disposable.ts";
 
 const compositeDisposable = new CompositeDisposable();
+const taskDisposable = new CompositeDisposable();
 
 const configRestartKeys = [
   "co.gwil.deno.config.enableLsp",
@@ -24,6 +25,14 @@ const workspaceConfigRestartKeys = [
 ];
 
 export function activate() {
+  const workspacePath = nova.workspace.path as string;
+  const denoConfigPath = nova.path.join(workspacePath, "deno.json");
+  const configWatcher = nova.fs.watch(denoConfigPath, () => {
+    taskDisposable.dispose();
+    taskDisposable.add(registerDenoTasks());
+  });
+  compositeDisposable.add(configWatcher);
+
   const clientDisposable = makeClientDisposable(compositeDisposable);
 
   compositeDisposable.add(clientDisposable);
