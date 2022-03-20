@@ -1,9 +1,8 @@
 Simple and fast JavaScript and Typescript integratian, powered by the
 [Deno](https://deno.land) runtime.
 
-- Inline typechecking, completions, and inline API information for Javascript
-  and Typescript!
-- Tasks derived from deno.json!
+- Inline typechecking, completions, code actions, and more!
+- Tasks for Nova derived from deno.json!
 - Code linting!
 - Automatic formatting on save!
 - Remote module (e.g. `import { x } from "https://cdn.com/mod.ts"`) caching!
