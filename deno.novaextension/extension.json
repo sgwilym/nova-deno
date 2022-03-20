@@ -2,8 +2,8 @@
   "identifier": "co.gwil.deno",
   "name": "Deno",
   "organization": "Sam Gwilym",
-  "description": "Deno runtime support for Nova.",
-  "version": "0.4.3",
+  "description": "TypeScript and Javascript via the Deno runtime.",
+  "version": "1.0.0",
   "categories": ["languages", "formatters", "issues", "completions", "tasks"],
   "repository": "https://github.com/sgwilym/nova-deno",
   "bugs": "https://github.com/sgwilym/nova-deno/issues",
@@ -21,7 +21,9 @@
     "onLanguage:typescript",
     "onLanguage:tsx",
     "onLanguage:javascript",
-    "onLanguage:jsx"
+    "onLanguage:jsx",
+    "onWorkspaceContains:deno.json",
+    "onWorkspaceContains:deno.jsonc"
   ],
 
   "config": [
@@ -123,7 +125,7 @@
       "key": "co.gwil.deno.config.import-map",
       "title": "Import map",
       "link": "https://deno.land/manual/linking_to_external_code/import_maps",
-      "description": "Load import map file from local file or remote URL.",
+      "description": "Load import map file from local file or remote URL. Automatically detected in the deno.json as of Deno 1.20.",
       "type": "string"
     }
   ],

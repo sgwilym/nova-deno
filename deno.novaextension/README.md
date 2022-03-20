@@ -1,16 +1,14 @@
-Very fast JavaScript and Typescript integration, powered by
-[Deno](https://deno.land).
+Simple and fast JavaScript and Typescript integratian, powered by the
+[Deno](https://deno.land) runtime.
 
-- Inline typechecking and Intellisense for Javascript and Typescript!
+- Inline typechecking, completions, and inline API information for Javascript
+  and Typescript!
+- Tasks derived from deno.json!
 - Code linting!
 - Automatic formatting on save!
 - Remote module (e.g. `import { x } from "https://cdn.com/mod.ts"`) caching!
-- Registry import suggestions
+- Registry import suggestions!
 - Task templates for `deno run` and `deno` bundle!
-
-**This is pre-v1.0**. While the most important functions of Deno are integrated
-here, there are a few limitations due to Nova's LSP integration. This is a
-best-effort extension, and I will keep making it better as Nova allows!
 
 ## Requirements 🎒
 
@@ -18,7 +16,9 @@ To use this extension, you must have Deno installed (v.1.10.3 or above).
 [Here's how you can do that](https://deno.land/#installation).
 
 If you use Deno 1.18+, any deno.json configuration files will be automatically
-detected and used by this extension
+detected and used by this extension.
+
+Support for Deno tasks requires Deno 1.20+.
 
 ## Commands ⌨️
 
@@ -37,11 +37,12 @@ All of the below can be configured at a global and per-project basis (via
 - Deno language features
 - Linting
 - Unstable Deno APIs
+- Import map
 
 All of those can be defined at a per-project level, including an import map to
 use.
 
-## Known limitations
+## Limitations
 
 There are a few limitations which I'm doing my best to resolve with the help of
 Panic.
