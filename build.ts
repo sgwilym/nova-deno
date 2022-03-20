@@ -1,6 +1,6 @@
 import * as esbuild from "https://deno.land/x/esbuild@v0.14.11/mod.js";
 
-const { files } = await Deno.emit("./mod.ts", {
+const { files } = await Deno.emit("./src/nova_deno.ts", {
   bundle: "module",
 });
 
