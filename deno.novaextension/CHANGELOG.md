@@ -1,3 +1,13 @@
+## v1.0.0
+
+- Added support for automatically detecting
+  [Deno tasks](https://deno.com/blog/v1.20#new-subcommand-deno-task) and adding
+  them as Nova tasks.
+- With Nova 9, many previous issues (such as code actions, or completions only
+  being shown on typing certain characters) have gone, and this is a whole new
+  extension!
+- New icons!
+
 ## v0.4.2
 
 - Now properly restarts LSP server when changing global and per-project settings

@@ -3,7 +3,7 @@
   "name": "Deno",
   "organization": "Sam Gwilym",
   "description": "TypeScript and Javascript via the Deno runtime.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "categories": ["languages", "formatters", "issues", "completions", "tasks"],
   "repository": "https://github.com/sgwilym/nova-deno",
   "bugs": "https://github.com/sgwilym/nova-deno/issues",
