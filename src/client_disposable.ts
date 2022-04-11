@@ -11,7 +11,7 @@ import registerCache from "./commands/cache.ts";
 import registerRenameSymbol from "./commands/rename_symbol.ts";
 import syntaxes from "./syntaxes.ts";
 
-const FORMAT_ON_SAVE_CONFIG_KEY = "co.gwil.deno.config.formatDocumentOnSave";
+const FORMAT_ON_SAVE_CONFIG_KEY = "co.gwil.deno.config.formatOnSave";
 const TRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.trustedImportHosts";
 const UNTRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.untrustedImportHosts";
 
