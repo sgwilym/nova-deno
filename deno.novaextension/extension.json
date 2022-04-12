@@ -2,9 +2,16 @@
   "identifier": "co.gwil.deno",
   "name": "Deno",
   "organization": "Sam Gwilym",
-  "description": "TypeScript and Javascript via the Deno runtime.",
-  "version": "1.0.1",
-  "categories": ["languages", "formatters", "issues", "completions", "tasks"],
+  "description": "Everything you need for TypeScript and JavaScript development.",
+  "version": "1.0.2",
+  "categories": [
+    "languages",
+    "formatters",
+    "issues",
+    "completions",
+    "tasks",
+    "commands"
+  ],
   "repository": "https://github.com/sgwilym/nova-deno",
   "bugs": "https://github.com/sgwilym/nova-deno/issues",
 

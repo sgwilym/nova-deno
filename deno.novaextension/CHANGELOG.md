@@ -1,3 +1,14 @@
+## v1.0.2
+
+- Fixed an issue where the 'Format on save' preference was not being respected
+  (thank you [belcar-s](https://github.com/belcar-s)!).
+- Made it so that the LSP is relaunched when the deno.json configuration file is
+  modified.
+
+## v1.0.1
+
+- Bump for publishing the updated README.
+
 ## v1.0.0
 
 - Added support for automatically detecting

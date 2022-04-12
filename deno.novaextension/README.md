@@ -1,18 +1,47 @@
-Simple and fast JavaScript and Typescript integratian, powered by the
+# Deno 🦕
+
+Everything you need for TypeScript and JavaScript development, powered by the
 [Deno](https://deno.land) runtime.
 
-- Inline typechecking, completions, code actions, and more!
-- Tasks for Nova derived from deno.json!
-- Code linting!
-- Automatic formatting on save!
-- Remote module (e.g. `import { x } from "https://cdn.com/mod.ts"`) caching!
-- Registry import suggestions!
-- Task templates for `deno run` and `deno` bundle!
+- TypeScript support out of the box.
+- A complete development toolchain including a **formatter**, **linter**, **test
+  runner**, **bundler**, and **language server**.
+- Complete support for standard Web APIs like `fetch`, 'WebSocket', or the
+  Streams API.
+- An audited [standard library](https://deno.land/std).
+- Dependencies without node_modules or package.json.
+- Secure by default, requiring explicit permission for file, network or
+  environment access.
+
+Deno's complete and _fast_ toolchain (built in Rust) is the perfect companion
+for Nova. This extension provides the following integrations with Nova:
+
+- Typechecking, linting, completions, code actions, registry import suggestions,
+  and more in your editor.
+- Tasks in Nova derived from
+  [Deno tasks](https://deno.com/blog/v1.20#new-subcommand-deno-task).
+- Automatic formatting on save.
+- Commands for renaming symbols, caching dependencies, formatting documents, and
+  renaming symbols.
+- Task templates for `deno run` and `deno bundle` commands.
+- Global and per-project configuration settings.
+
+Nova also has built-in support for Deno's debugger thanks to its Deno Debug project task (**Project → Project Settings → Add Deno Debug using + in Tasks section**).
+
+### How is this different to the TypeScript extension?
+
+There is an
+[excellent Nova Typescript extension](https://github.com/apexskier/nova-typescript)
+by Cameron little. This extension assumes the usage of the Node.js runtime,
+which does _not_ have its own formatter, linter, test runner, bundler, etc. and
+as such requires several other dependencies and corresponding Nova extensions
+for these features.
 
 ## Requirements 🎒
 
-To use this extension, you must have Deno installed (v.1.10.3 or above).
-[Here's how you can do that](https://deno.land/#installation).
+To use this extension, you must have the Deno runtime installed (v.1.10.3 or
+above).
+[Installation instructions can be found here](https://deno.land/#installation).
 
 If you use Deno 1.18+, any deno.json configuration files will be automatically
 detected and used by this extension.
@@ -38,24 +67,18 @@ All of the below can be configured at a global and per-project basis (via
 - Unstable Deno APIs
 - Import map
 
-All of those can be defined at a per-project level, including an import map to
-use.
+The following is configurable only at a global scope:
 
-## Limitations
+- Trusted and untrusted hosts for Import suggestions
 
-There are a few limitations which I'm doing my best to resolve with the help of
-Panic.
+## Shoutouts 📣
 
-- The **Jump to definition** command does not work for values defined within
-  external dependencies.
+Big thanks to Cameron Little's
+[excellent Nova Typescript extension](https://github.com/apexskier/nova-typescript)
+for providing an excellent reference (and a lot of code) for developing a great
+Nova extension.
 
-## Mega Shoutouts 📣
+## Contributing 🤝
 
-Much of the code in this extension was based on — if not entirely lifted from —
-Cameron Little's
-[excellent Nova Typescript extension](https://github.com/apexskier/nova-typescript).
-
-## Contributing
-
-This extension is itself a Deno project.
-[Come fix bugs and add features with us](https://github.com/sgwilym/nova-deno)!
+This extension is itself a Deno codebase.
+[Come add features and fix bugs with us](https://github.com/sgwilym/nova-deno)!
