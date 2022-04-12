@@ -1,4 +1,4 @@
-import { CompositeDisposable, FileSystem, nova } from "./nova_utils.ts";
+import { CompositeDisposable, nova } from "./nova_utils.ts";
 import {
   registerBundleTask,
   registerDenoTasks,
@@ -30,6 +30,7 @@ export function activate() {
   const configWatcher = nova.fs.watch(denoConfigPath, () => {
     taskDisposable.dispose();
     taskDisposable.add(registerDenoTasks());
+    nova.commands.invoke("co.gwil.deno.commands.restartServer");
   });
   compositeDisposable.add(configWatcher);
 
