@@ -54,7 +54,7 @@ export function makeClientDisposable(parentDisposable: CompositeDisposable) {
     {
       syntaxes,
       initializationOptions: {
-        enable: getOverridableBoolean("co.gwil.deno.config.enableLsp") || true,
+        enable: getOverridableBoolean("co.gwil.deno.config.enableLsp"),
         lint: getOverridableBoolean("co.gwil.deno.config.enableLinting"),
         unstable: getOverridableBoolean("co.gwil.deno.config.enableUnstable"),
         importMap: nova.workspace.config.get("co.gwil.deno.config.import-map"),
