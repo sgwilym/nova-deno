@@ -1,7 +1,12 @@
+## v1.0.3
+
+- Fixed an issue where the "Enable Deno Language Features" preferenc was not
+  being respected (thanks again, [belcar-s](https://github.com/belcar-s)!)
+
 ## v1.0.2
 
 - Fixed an issue where the 'Format on save' preference was not being respected
-  (thank you [belcar-s](https://github.com/belcar-s)!).
+  (thank you [belcar-s](https://github.com/belcar-s)!)
 - Made it so that the LSP is relaunched when the deno.json configuration file is
   modified.
 
