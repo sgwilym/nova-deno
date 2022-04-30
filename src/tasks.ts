@@ -7,22 +7,32 @@ import {
   TaskProcessAction,
   Transferrable,
 } from "./nova_utils.ts";
+import { stripJSONcomments } from "../deps.ts";
 
 class DenoTaskAssistant implements TaskAssistant {
   provideTasks() {
+    return [
+      ...this.#getTasksFromFilename("deno.json"),
+      ...this.#getTasksFromFilename("deno.jsonc"),
+    ];
+  }
+
+  #getTasksFromFilename(filename: string) {
     const workspacePath = nova.workspace.path;
 
     if (!workspacePath) {
       return [];
     }
 
-    const denoConfigPath = nova.path.join(workspacePath, "deno.json");
+    const denoConfigPath = nova.path.join(workspacePath, filename);
     const denoConfigStat = nova.fs.stat(denoConfigPath);
 
     if (denoConfigStat?.isFile()) {
       try {
         const config = JSON.parse(
-          nova.fs.open(denoConfigPath).read() as string,
+          stripJSONcomments(
+            nova.fs.open(denoConfigPath).read() as string,
+          ),
         );
 
         const tasks = config["tasks"];
