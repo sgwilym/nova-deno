@@ -155,7 +155,7 @@ export function makeClientDisposable(parentDisposable: CompositeDisposable) {
         if (!isUntrusted && !isTrusted) {
           if (suggestions) {
             const notificationReq = new NotificationRequest(
-              "co.gwil.deno.notificiations.hostIntellisenseAvailable",
+              "co.gwil.deno.notifications.hostIntellisenseAvailable",
             );
 
             notificationReq.title = "Intellisense available";
