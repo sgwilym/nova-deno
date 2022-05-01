@@ -137,6 +137,26 @@
     }
   ],
 
+  "sidebars": [
+    {
+      "id": "co.gwil.deno.sidebars.symbols",
+      "name": "Deno Symbols",
+      "sections": [
+        {
+          "id": "co.gwil.deno.sidebars.symbols.sections.1",
+          "name": "Symbols",
+          "placeholderText": "Use the Find Symbol command to find symbols with Deno.",
+          "headerCommands": [
+            {
+              "title": "Find",
+              "command": "co.gwil.deno.sidebars.symbols.commands.find"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+
   "commands": {
     "editor": [
       {
@@ -149,6 +169,13 @@
       {
         "title": "Rename Symbol",
         "command": "co.gwil.deno.commands.rename",
+        "filters": {
+          "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
+        }
+      },
+      {
+        "title": "Find Symbol",
+        "command": "co.gwil.deno.commands.find",
         "filters": {
           "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
         }
