@@ -182,7 +182,14 @@ function provideDetailsInSidebar(symbols: lsp.SymbolInformation[]) {
     symbolDataProvider = new SymbolDataProvider();
   }
 
-  const sidebarSymbols = symbols.map((lspSymbol) => new Symbol(lspSymbol));
+  const sidebarSymbols = symbols.filter((lspSymbol) =>
+    // is a file
+    lspSymbol.location.uri.startsWith("file://")
+  ).map(
+    // turn into `Symbol`s
+    (lspSymbol) => new Symbol(lspSymbol),
+  );
+
   symbolDataProvider.symbols = sidebarSymbols;
   symbolDataProvider.treeView.reload();
 }
