@@ -142,6 +142,7 @@
       "id": "co.gwil.deno.sidebars.symbols",
       "name": "Deno Symbols",
       "placeholderText": "Use the Find Symbol command to find symbols with Deno.",
+      "largeImage": "sidebar_large",
       "sections": [
         {
           "id": "co.gwil.deno.sidebars.symbols.sections.1",
