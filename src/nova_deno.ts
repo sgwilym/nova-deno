@@ -25,14 +25,11 @@ const workspaceConfigRestartKeys = [
 ];
 
 export function activate() {
-  const workspacePath = nova.workspace.path as string;
-  const denoConfigPath = nova.path.join(workspacePath, "deno.json");
-  const configWatcher = nova.fs.watch(denoConfigPath, () => {
-    taskDisposable.dispose();
-    taskDisposable.add(registerDenoTasks());
-    nova.commands.invoke("co.gwil.deno.commands.restartServer");
-  });
-  compositeDisposable.add(configWatcher);
+  const workspacePath = nova.workspace.path;
+  if (workspacePath) {
+    watchConfigFile(workspacePath, "deno.json");
+    watchConfigFile(workspacePath, "deno.jsonc");
+  }
 
   const clientDisposable = makeClientDisposable(compositeDisposable);
 
@@ -61,6 +58,16 @@ export function activate() {
 
 export function deactivate() {
   compositeDisposable.dispose();
+}
+
+function watchConfigFile(workspacePath: string, filename: string) {
+  const denoConfigPath = nova.path.join(workspacePath, filename);
+  const configWatcher = nova.fs.watch(denoConfigPath, () => {
+    taskDisposable.dispose();
+    taskDisposable.add(registerDenoTasks());
+    nova.commands.invoke("co.gwil.deno.commands.restartServer");
+  });
+  compositeDisposable.add(configWatcher);
 }
 
 function restartServerOnConfigChanges(keys: string[]) {
