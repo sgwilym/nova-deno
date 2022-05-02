@@ -12,12 +12,12 @@ import { stripJSONcomments } from "../deps.ts";
 class DenoTaskAssistant implements TaskAssistant {
   provideTasks() {
     return [
-      ...this.#getTasksFromFilename("deno.json"),
-      ...this.#getTasksFromFilename("deno.jsonc"),
+      ...this.getTasksFromFilename("deno.json"),
+      ...this.getTasksFromFilename("deno.jsonc"),
     ];
   }
 
-  #getTasksFromFilename(filename: string) {
+  private getTasksFromFilename(filename: string) {
     const workspacePath = nova.workspace.path;
 
     if (!workspacePath) {
