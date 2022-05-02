@@ -1,8 +1,10 @@
 import {
+  Disposable,
   LanguageClient,
   lspRangeToRange,
   NotificationRequest,
   nova,
+  TextEditor,
   TreeDataProvider,
   TreeItem,
   TreeView,
@@ -11,6 +13,17 @@ import {
 import { lsp } from "../../deps.ts";
 let symbolDataProvider: SymbolDataProvider | null = null;
 
+class Header {
+  content: string;
+  constructor(content: string) {
+    this.content = content;
+  }
+
+  toTreeItem() {
+    const item = new TreeItem(this.content);
+    return item;
+  }
+}
 class Symbol {
   name: string;
   type: string;
@@ -147,51 +160,96 @@ class Symbol {
     editor.scrollToPosition(range.start);
   }
 }
-class SymbolDataProvider implements TreeDataProvider<Symbol> {
-  treeView: TreeView<Symbol>;
-  symbols: Symbol[];
+class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
+  #treeView: TreeView<Symbol | Header>;
+  #symbols: Symbol[];
+  #currentQuery: string | null;
+  #headerMessage: string | null;
+
   constructor() {
-    this.treeView = new TreeView("co.gwil.deno.sidebars.symbols.sections.1", {
+    this.#treeView = new TreeView("co.gwil.deno.sidebars.symbols.sections.1", {
       dataProvider: this,
     });
-    this.treeView.onDidChangeSelection((selectedElements) => {
+    this.#treeView.onDidChangeSelection((selectedElements) => {
       if (selectedElements.length == 1) {
         const [element] = selectedElements;
+        if (element instanceof Header) {
+          return;
+        }
         element.show();
       }
     });
 
-    this.symbols = [];
+    this.#symbols = [];
+    this.#headerMessage = null;
+    this.#currentQuery = null;
+  }
+
+  /**
+   * Reload the TreeView. This is an alias. Its purpose is to make code prettier.
+   */
+  #reload() {
+    return this.#treeView.reload();
+  }
+
+  setSymbols(lspSymbols: lsp.SymbolInformation[]) {
+    this.#symbols = lspSymbols.filter((lspSymbol) =>
+      // is a file
+      lspSymbol.location.uri.startsWith("file://")
+    ).map(
+      // turn into `Symbol`s
+      (lspSymbol) => new Symbol(lspSymbol),
+    );
+    return this.#symbols;
+  }
+
+  displaySymbols(
+    query: string,
+    getSymbols: (query: string) => Promise<lsp.SymbolInformation[] | null>,
+    textEditor: TextEditor,
+  ) {
+    this.#currentQuery = query;
+
+    let disposable: Disposable | null = null;
+    const updateSymbols = async () => {
+      if (this.#currentQuery != query) {
+        if (disposable) {
+          // unregister the listener
+          disposable.dispose();
+        }
+        return;
+      }
+
+      const symbols = await getSymbols(query) ?? [];
+      const displayedSymbols = this.setSymbols(symbols);
+
+      if (displayedSymbols.length) {
+        this.#headerMessage = `Results for '${query}':`;
+      } else {
+        this.#headerMessage = `No results found for '${query}':`;
+      }
+      this.#reload();
+    };
+    updateSymbols();
+
+    disposable = textEditor.onDidStopChanging(updateSymbols);
   }
 
   getChildren(element: Symbol | null) {
     if (element == null) {
       // top-level
-      return this.symbols;
+      const elements: (Symbol | Header)[] = [...this.#symbols]; // A copy needs to be made. Otherwise, we would edit the actual `this.#symbols`.
+      if (this.#headerMessage) {
+        elements.unshift(new Header(this.#headerMessage));
+      }
+      return elements;
     }
     return [];
   }
 
-  getTreeItem(element: Symbol) {
+  getTreeItem(element: Symbol | Header) {
     return element.toTreeItem();
   }
-}
-
-function provideDetailsInSidebar(symbols: lsp.SymbolInformation[]) {
-  if (!symbolDataProvider) {
-    symbolDataProvider = new SymbolDataProvider();
-  }
-
-  const sidebarSymbols = symbols.filter((lspSymbol) =>
-    // is a file
-    lspSymbol.location.uri.startsWith("file://")
-  ).map(
-    // turn into `Symbol`s
-    (lspSymbol) => new Symbol(lspSymbol),
-  );
-
-  symbolDataProvider.symbols = sidebarSymbols;
-  symbolDataProvider.treeView.reload();
 }
 
 export default function registerFindSymbol(client: LanguageClient) {
@@ -201,31 +259,31 @@ export default function registerFindSymbol(client: LanguageClient) {
   );
 
   async function findSymbol() {
+    if (!symbolDataProvider) {
+      symbolDataProvider = new SymbolDataProvider();
+    }
+
     const query = await new Promise((resolve) =>
       nova.workspace.showInputPalette(
         "Type the name of a variable, class or function.",
         {},
         resolve,
       )
-    );
+    ) as string | null | undefined;
 
     // This happens if the user exits the palette, for example, by pressing Escape.
     if (!query) return;
 
-    const params = { query };
-    const response = await client.sendRequest(
-      "workspace/symbol",
-      params,
-    ) as lsp.SymbolInformation[] | null;
+    const textEditor = nova.workspace.activeTextEditor;
+    symbolDataProvider.displaySymbols(query, getSymbols, textEditor);
 
-    if (response?.length) {
-      provideDetailsInSidebar(response);
-    } else {
-      const failureNotificationReq = new NotificationRequest(
-        "co.gwil.deno.notifications.failedToFindSymbol",
-      );
-      failureNotificationReq.title = "The symbol could not be found.";
-      nova.notifications.add(failureNotificationReq);
+    async function getSymbols(query: string) {
+      const params = { query };
+      const response = await client.sendRequest(
+        "workspace/symbol",
+        params,
+      ) as lsp.SymbolInformation[] | null;
+      return response;
     }
   }
 }
