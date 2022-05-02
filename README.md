@@ -24,4 +24,4 @@ pulling these out into a module called
 2. Select **Extensions -> Activate Project as Extension** in the menu bar (you
    will need to enable Extension development in the general section of Nova's
    preferences to do this).
-3. Run the 'Bundle' command, which outputs a bundle\* to `deno.novaextension`.
+3. Run the 'build' command, which outputs a bundle\* to `deno.novaextension`.

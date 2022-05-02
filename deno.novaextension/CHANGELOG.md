@@ -1,3 +1,11 @@
+## v1.0.4
+
+- Fixes an issue where tasks defined in a `deno.jsonc` config file would not be
+  exposed as Nova tasks (thanks again, [belcar-s](https://github.com/belcar-s)!)
+- Fixes an issue where the extension would not work in files which were not
+  associated with any project yet (thanks again,
+  [belcar-s](https://github.com/belcar-s)!)
+
 ## v1.0.3
 
 - Fixed an issue where the "Enable Deno Language Features" preferenc was not

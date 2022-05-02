@@ -26,7 +26,9 @@ for Nova. This extension provides the following integrations with Nova:
 - Task templates for `deno run` and `deno bundle` commands.
 - Global and per-project configuration settings.
 
-Nova also has built-in support for Deno's debugger thanks to its Deno Debug project task (**Project → Project Settings → Add Deno Debug using + in Tasks section**).
+Nova also has built-in support for Deno's debugger thanks to its Deno Debug
+project task (**Project → Project Settings → Add Deno Debug using + in Tasks
+section**).
 
 ### How is this different to the TypeScript extension?
 
