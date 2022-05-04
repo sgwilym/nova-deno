@@ -191,7 +191,7 @@ class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
     return this.#treeView.reload();
   }
 
-  setSymbols(lspSymbols: lsp.SymbolInformation[]) {
+  #setSymbols(lspSymbols: lsp.SymbolInformation[]) {
     this.#symbols = lspSymbols.filter((lspSymbol) =>
       // is a file
       lspSymbol.location.uri.startsWith("file://")
@@ -220,7 +220,7 @@ class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
       }
 
       const symbols = await getSymbols(query) ?? [];
-      const displayedSymbols = this.setSymbols(symbols);
+      const displayedSymbols = this.#setSymbols(symbols);
 
       if (displayedSymbols.length) {
         this.#headerMessage = `Results for '${query}':`;
