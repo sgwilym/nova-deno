@@ -155,7 +155,7 @@ class Symbol {
       return;
     }
     const range = lspRangeToRange(editor.document, lspRange);
-    editor.addSelectionForRange(range);
+    editor.selectedRange = range;
     editor.scrollToPosition(range.start);
   }
 }
