@@ -2,7 +2,6 @@ import {
   Disposable,
   LanguageClient,
   lspRangeToRange,
-  NotificationRequest,
   nova,
   TextEditor,
   TreeDataProvider,
