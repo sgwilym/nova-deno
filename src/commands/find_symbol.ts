@@ -169,19 +169,21 @@ class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
     this.#treeView = new TreeView("co.gwil.deno.sidebars.symbols.sections.1", {
       dataProvider: this,
     });
-    this.#treeView.onDidChangeSelection((selectedElements) => {
-      if (selectedElements.length == 1) {
-        const [element] = selectedElements;
-        if (element instanceof Header) {
-          return;
-        }
-        element.show();
-      }
-    });
+    this.#treeView.onDidChangeSelection(this.#onDidChangeSelection);
 
     this.#symbols = [];
     this.#headerMessage = null;
     this.#currentQuery = null;
+  }
+
+  #onDidChangeSelection(selectedElements: (Symbol | Header)[]) {
+    if (selectedElements.length == 1) {
+      const [element] = selectedElements;
+      if (element instanceof Header) {
+        return;
+      }
+      element.show();
+    }
   }
 
   /**
