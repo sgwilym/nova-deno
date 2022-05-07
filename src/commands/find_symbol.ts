@@ -30,12 +30,12 @@ class Symbol {
 
   constructor(lspSymbol: lsp.SymbolInformation) {
     this.name = lspSymbol.name;
-    this.type = this.#getType(lspSymbol);
+    this.type = this.getType(lspSymbol);
     this.location = lspSymbol.location;
   }
 
   // This can maybe be moved to nova_utils.
-  #getType(lspSymbol: lsp.SymbolInformation) {
+  private getType(lspSymbol: lsp.SymbolInformation) {
     switch (lspSymbol.kind) {
       case 1: {
         return "file";
@@ -160,23 +160,23 @@ class Symbol {
   }
 }
 class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
-  #treeView: TreeView<Symbol | Header>;
-  #symbols: Symbol[];
-  #currentQuery: string | null;
-  #headerMessage: string | null;
+  private treeView: TreeView<Symbol | Header>;
+  private symbols: Symbol[];
+  private currentQuery: string | null;
+  private headerMessage: string | null;
 
   constructor() {
-    this.#treeView = new TreeView("co.gwil.deno.sidebars.symbols.sections.1", {
+    this.treeView = new TreeView("co.gwil.deno.sidebars.symbols.sections.1", {
       dataProvider: this,
     });
-    this.#treeView.onDidChangeSelection(this.#onDidChangeSelection);
+    this.treeView.onDidChangeSelection(this.onDidChangeSelection);
 
-    this.#symbols = [];
-    this.#headerMessage = null;
-    this.#currentQuery = null;
+    this.symbols = [];
+    this.headerMessage = null;
+    this.currentQuery = null;
   }
 
-  #onDidChangeSelection(selectedElements: (Symbol | Header)[]) {
+  private onDidChangeSelection(selectedElements: (Symbol | Header)[]) {
     if (selectedElements.length == 1) {
       const [element] = selectedElements;
       if (element instanceof Header) {
@@ -189,19 +189,19 @@ class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
   /**
    * Reload the TreeView. This is an alias. Its purpose is to make code prettier.
    */
-  #reload() {
-    return this.#treeView.reload();
+  private reload() {
+    return this.treeView.reload();
   }
 
-  #setSymbols(lspSymbols: lsp.SymbolInformation[]) {
-    this.#symbols = lspSymbols.filter((lspSymbol) =>
+  private setSymbols(lspSymbols: lsp.SymbolInformation[]) {
+    this.symbols = lspSymbols.filter((lspSymbol) =>
       // is a file
       lspSymbol.location.uri.startsWith("file://")
     ).map(
       // turn into `Symbol`s
       (lspSymbol) => new Symbol(lspSymbol),
     );
-    return this.#symbols;
+    return this.symbols;
   }
 
   displaySymbols(
@@ -209,11 +209,11 @@ class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
     getSymbols: (query: string) => Promise<lsp.SymbolInformation[] | null>,
     textEditor: TextEditor,
   ) {
-    this.#currentQuery = query;
+    this.currentQuery = query;
 
     let disposable: Disposable | null = null;
     const updateSymbols = async () => {
-      if (this.#currentQuery != query) {
+      if (this.currentQuery != query) {
         if (disposable) {
           // unregister the listener
           disposable.dispose();
@@ -222,14 +222,14 @@ class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
       }
 
       const symbols = await getSymbols(query) ?? [];
-      const displayedSymbols = this.#setSymbols(symbols);
+      const displayedSymbols = this.setSymbols(symbols);
 
       if (displayedSymbols.length) {
-        this.#headerMessage = `Results for '${query}':`;
+        this.headerMessage = `Results for '${query}':`;
       } else {
-        this.#headerMessage = `No results found for '${query}':`;
+        this.headerMessage = `No results found for '${query}':`;
       }
-      this.#reload();
+      this.reload();
     };
     updateSymbols();
 
@@ -239,9 +239,9 @@ class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
   getChildren(element: Symbol | null) {
     if (element == null) {
       // top-level
-      const elements: (Symbol | Header)[] = [...this.#symbols]; // A copy needs to be made. Otherwise, we would edit the actual `this.#symbols`.
-      if (this.#headerMessage) {
-        elements.unshift(new Header(this.#headerMessage));
+      const elements: (Symbol | Header)[] = [...this.symbols]; // A copy needs to be made. Otherwise, we would edit the actual `this.#symbols`.
+      if (this.headerMessage) {
+        elements.unshift(new Header(this.headerMessage));
       }
       return elements;
     }
