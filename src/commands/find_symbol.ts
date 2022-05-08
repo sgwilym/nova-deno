@@ -227,7 +227,7 @@ class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
       if (displayedSymbols.length) {
         this.headerMessage = `Results for '${query}':`;
       } else {
-        this.headerMessage = `No results found for '${query}':`;
+        this.headerMessage = `No results found for '${query}'.`;
       }
       this.reload();
     };
