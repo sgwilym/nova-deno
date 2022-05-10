@@ -9,7 +9,7 @@ import {
 import registerFormatDocument from "./commands/format_document.ts";
 import registerCache from "./commands/cache.ts";
 import registerRenameSymbol from "./commands/rename_symbol.ts";
-import registerFindSymbol from "./commands/find_symbol.ts";
+import registerPaletteFindSymbol from "./commands/palette_find_symbol.ts";
 import registerSymbolSidebarFindSymbol from "./commands/sidebar_find_symbol.ts";
 import syntaxes from "./syntaxes.ts";
 
@@ -78,7 +78,9 @@ export function makeClientDisposable(parentDisposable: CompositeDisposable) {
     clientDisposable.add(registerFormatDocument(client));
     clientDisposable.add(registerCache(client));
     clientDisposable.add(registerRenameSymbol(client));
-    clientDisposable.add(registerFindSymbol(client));
+
+    // palette Find Symbol command
+    clientDisposable.add(registerPaletteFindSymbol());
     // sidebar Find Symbol command
     clientDisposable.add(registerSymbolSidebarFindSymbol(client));
 
