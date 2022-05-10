@@ -178,9 +178,7 @@
       {
         "title": "Find Symbol",
         "command": "co.gwil.deno.commands.find",
-        "filters": {
-          "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
-        }
+        "when": "shouldDisplayFeatures"
       },
       {
         "title": "Cache dependencies",
