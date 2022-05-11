@@ -9,9 +9,9 @@ export default function registerFindSymbol() {
   async function maybeFindSymbol() {
     try {
       await nova.commands.invoke("co.gwil.deno.sidebars.symbols.commands.find");
-    } catch (e) {
+    } catch (err) {
       // I don't think this ever happens.
-      console.error(e);
+      console.error(err);
     }
 
     const sidebarReminderNotificationRequest = new NotificationRequest(
