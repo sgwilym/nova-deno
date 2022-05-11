@@ -95,14 +95,12 @@ function registerEditorWatcher() {
     );
 
     if (isCompatible) {
-      console.log("Enabled features.");
       // @ts-expect-error: The Nova types are outdated. This feature was added in version 5.
       (nova.workspace.context as Configuration).set(
         "shouldDisplayFeatures",
         true,
       );
     } else {
-      console.log("Disabled features.");
       // @ts-expect-error: for the reason above
       (nova.workspace.context as Configuration).set(
         "shouldDisplayFeatures",
