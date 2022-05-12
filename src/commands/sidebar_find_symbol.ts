@@ -277,6 +277,7 @@ export default function registerFindSymbol(client: LanguageClient) {
       failureNotificationReq.body =
         "Open a TypeScript, JavaScript, JSX or TSX file.";
       nova.notifications.add(failureNotificationReq);
+      return;
     }
 
     const query = await new Promise((resolve) =>
