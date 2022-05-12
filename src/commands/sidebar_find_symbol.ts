@@ -268,7 +268,7 @@ export default function registerFindSymbol(client: LanguageClient) {
 
     if (
       // @ts-expect-error: The Nova types are outdated.
-      (nova.workspace.context as Configuration).get("shouldDisplayFeatures")
+      !(nova.workspace.context as Configuration).get("shouldDisplayFeatures")
     ) {
       const failureNotificationReq = new NotificationRequest(
         "co.gwil.deno.notifications.findSymbolUnavailable",
