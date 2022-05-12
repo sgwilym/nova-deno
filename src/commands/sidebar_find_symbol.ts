@@ -8,16 +8,55 @@ import {
   TextEditor,
   TreeDataProvider,
   TreeItem,
+  TreeItemCollapsibleState,
   TreeView,
   wrapCommand,
 } from "../nova_utils.ts";
 import { lsp } from "../../deps.ts";
 let symbolDataProvider: SymbolDataProvider | null = null;
 
+interface ElementConversionOptions {
+  shouldDisambiguate?: boolean;
+}
+type Element = File | Header | Symbol;
+class File {
+  uri: string;
+  extension: string;
+  children: Symbol[];
+  constructor(uri: string, children: Symbol[]) {
+    this.uri = uri;
+    this.extension = uri.split(".").pop()!;
+    this.children = children;
+  }
+
+  get filename(): string {
+    // Nova doesn't provide the web APIs that can be used to do this properly, and I can't write a percent-encoding decoder.
+    return this.uri.split("/").pop()!.replaceAll("%20", " ");
+  }
+
+  toTreeItem(
+    { shouldDisambiguate }: ElementConversionOptions = {},
+  ) {
+    const path = this.uri.slice(this.uri.indexOf(":") + 1).replaceAll(
+      "%20",
+      " ",
+    );
+    const relativePath: string = nova.workspace.relativizePath(path);
+    const item = new TreeItem(
+      shouldDisambiguate ? relativePath : this.filename,
+    );
+
+    item.image = "__filetype." + this.extension;
+    item.collapsibleState = TreeItemCollapsibleState.Expanded;
+    return item;
+  }
+}
 class Header {
   content: string;
+  children: [];
   constructor(content: string) {
     this.content = content;
+    this.children = [];
   }
 
   toTreeItem() {
@@ -29,11 +68,12 @@ class Symbol {
   name: string;
   type: string;
   location: lsp.Location;
-
+  children: [];
   constructor(lspSymbol: lsp.SymbolInformation) {
     this.name = lspSymbol.name;
     this.type = this.getType(lspSymbol);
     this.location = lspSymbol.location;
+    this.children = [];
   }
 
   // This can maybe be moved to nova_utils.
@@ -161,11 +201,13 @@ class Symbol {
     editor.scrollToPosition(range.start);
   }
 }
-class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
-  private treeView: TreeView<Symbol | Header>;
-  private symbols: Symbol[];
+class SymbolDataProvider implements TreeDataProvider<Element> {
+  private treeView: TreeView<Element>;
+  private symbols: Map<string, Symbol[]>;
+  private files: File[];
   private currentQuery: string | null;
   private headerMessage: string | null;
+  private ambiguousFilenames: string[];
 
   constructor() {
     this.treeView = new TreeView("co.gwil.deno.sidebars.symbols.sections.1", {
@@ -173,15 +215,18 @@ class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
     });
     this.treeView.onDidChangeSelection(this.onDidChangeSelection);
 
-    this.symbols = [];
+    this.symbols = new Map();
+    this.files = [];
+    this.ambiguousFilenames = [];
+
     this.headerMessage = null;
     this.currentQuery = null;
   }
 
-  private onDidChangeSelection(selectedElements: (Symbol | Header)[]) {
+  private onDidChangeSelection(selectedElements: (Element)[]) {
     if (selectedElements.length == 1) {
       const [element] = selectedElements;
-      if (element instanceof Header) {
+      if (!(element instanceof Symbol)) {
         return;
       }
       element.show();
@@ -196,13 +241,44 @@ class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
   }
 
   private setSymbols(lspSymbols: lsp.SymbolInformation[]) {
-    this.symbols = lspSymbols.filter((lspSymbol) =>
-      // is a file
+    const symbols = lspSymbols.filter((lspSymbol) =>
+      // keep only symbols from real files
       lspSymbol.location.uri.startsWith("file://")
     ).map(
       // turn into `Symbol`s
       (lspSymbol) => new Symbol(lspSymbol),
     );
+
+    this.symbols.clear();
+    for (const symbol of symbols) {
+      const { uri } = symbol.location;
+      this.symbols.set(
+        uri,
+        [...(this.symbols.get(uri) ?? []), symbol],
+      );
+    }
+
+    this.files = Array.from(this.symbols.keys()).map((uri) =>
+      new File(uri, this.symbols.get(uri)!)
+    );
+
+    function findDuplicates<Type>(array: Type[]): Type[] {
+      const seenItems: Type[] = [];
+      const duplicates: Type[] = [];
+
+      for (const item of array) {
+        if (seenItems.includes(item)) {
+          duplicates.push(item);
+        }
+        seenItems.push(item);
+      }
+
+      return duplicates;
+    }
+    this.ambiguousFilenames = findDuplicates(
+      this.files.map((file) => file.filename),
+    );
+
     return this.symbols;
   }
 
@@ -226,7 +302,7 @@ class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
       const symbols = await getSymbols(query) ?? [];
       const displayedSymbols = this.setSymbols(symbols);
 
-      if (displayedSymbols.length) {
+      if (displayedSymbols.size) {
         this.headerMessage = `Results for '${query}':`;
       } else {
         this.headerMessage = `No results found for '${query}'.`;
@@ -238,20 +314,27 @@ class SymbolDataProvider implements TreeDataProvider<Symbol | Header> {
     disposable = textEditor.onDidStopChanging(updateSymbols);
   }
 
-  getChildren(element: Symbol | null) {
+  getChildren(element: Element | null) {
     if (element == null) {
       // top-level
-      const elements: (Symbol | Header)[] = [...this.symbols]; // A copy needs to be made. Otherwise, we would edit the actual `this.#symbols`.
+
+      // A copy needs to be made. Otherwise, we would edit the actual `this.files`.
+      const elements: Element[] = [...this.files];
+
       if (this.headerMessage) {
         elements.unshift(new Header(this.headerMessage));
       }
       return elements;
     }
-    return [];
+    return element.children;
   }
 
-  getTreeItem(element: Symbol | Header) {
-    return element.toTreeItem();
+  getTreeItem(element: Element) {
+    const options: ElementConversionOptions = {
+      shouldDisambiguate: element instanceof File &&
+        this.ambiguousFilenames.includes(element.filename),
+    };
+    return element.toTreeItem(options);
   }
 }
 
