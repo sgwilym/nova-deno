@@ -41,7 +41,7 @@ export default function registerRename(client: LanguageClient) {
 
     const newName = await new Promise<string | null>((resolve) => {
       nova.workspace.showInputPalette(
-        "New name for symbol",
+        "Type a new name for this symbol.",
         { placeholder: editor.selectedText, value: editor.selectedText },
         resolve,
       );
