@@ -5,7 +5,6 @@ import {
   lspRangeToRange,
   NotificationRequest,
   nova,
-  TextEditor,
   TreeDataProvider,
   TreeItem,
   TreeItemCollapsibleState,
@@ -281,33 +280,51 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
   displaySymbols(
     query: string,
     getSymbols: (query: string) => Promise<lsp.SymbolInformation[] | null>,
-    textEditor: TextEditor,
   ) {
     this.currentQuery = query;
 
-    let disposable: Disposable | null = null;
-    const updateSymbols = async () => {
-      if (this.currentQuery != query) {
-        if (disposable) {
-          // unregister the listener
-          disposable.dispose();
+    /**
+     * Create an event listener and remove it after the search query changes.
+     */
+    const updateSymbolsAndManageDisposable = (
+      createEventListener: (callback: () => void) => Disposable,
+    ) => {
+      let disposable: Disposable | null = null;
+      const updateSymbols = async () => {
+        if (this.currentQuery != query) {
+          if (disposable) {
+            // unregister the listener
+            disposable.dispose();
+          }
+          return;
         }
-        return;
-      }
 
-      const symbols = await getSymbols(query) ?? [];
-      const displayedSymbols = this.setSymbols(symbols);
+        const symbols = await getSymbols(query) ?? [];
+        const displayedSymbols = this.setSymbols(symbols);
 
-      if (displayedSymbols.size) {
-        this.headerMessage = `Results for '${query}':`;
-      } else {
-        this.headerMessage = `No results found for '${query}'.`;
-      }
-      this.reload();
+        if (displayedSymbols.size) {
+          this.headerMessage = `Results for '${query}':`;
+        } else {
+          this.headerMessage = `No results found for '${query}'.`;
+        }
+        this.reload();
+      };
+      updateSymbols();
+
+      disposable = createEventListener(updateSymbols);
     };
-    updateSymbols();
 
-    disposable = textEditor.onDidStopChanging(updateSymbols);
+    for (const textEditor of nova.workspace.textEditors) {
+      updateSymbolsAndManageDisposable(
+        textEditor.onDidStopChanging.bind(textEditor),
+      );
+    }
+
+    nova.workspace.onDidAddTextEditor((textEditor) =>
+      updateSymbolsAndManageDisposable(
+        textEditor.onDidStopChanging.bind(textEditor),
+      )
+    );
   }
 
   getChildren(element: Element | null) {
@@ -370,8 +387,7 @@ export default function registerFindSymbol(client: LanguageClient) {
     // This happens if the user exits the palette, for example, by pressing Escape.
     if (!query) return;
 
-    const textEditor = nova.workspace.activeTextEditor;
-    symbolDataProvider.displaySymbols(query, getSymbols, textEditor);
+    symbolDataProvider.displaySymbols(query, getSymbols);
 
     async function getSymbols(query: string) {
       const params = { query };
