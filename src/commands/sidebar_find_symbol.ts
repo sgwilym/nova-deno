@@ -30,17 +30,13 @@ class File {
   }
 
   get filename(): string {
-    // Nova doesn't provide the web APIs that can be used to do this properly, and I can't write a percent-encoding decoder.
-    return this.uri.split("/").pop()!.replaceAll("%20", " ");
+    return decodeURIComponent(this.uri).split("/").pop()!;
   }
 
   toTreeItem(
     { shouldDisambiguate }: ElementConversionOptions = {},
   ) {
-    const path = this.uri.slice(this.uri.indexOf(":") + 1).replaceAll(
-      "%20",
-      " ",
-    );
+    const path = decodeURIComponent(this.uri.slice(this.uri.indexOf(":") + 1));
     const relativePath: string = nova.workspace.relativizePath(path);
     const item = new TreeItem(
       shouldDisambiguate ? relativePath : this.filename,
