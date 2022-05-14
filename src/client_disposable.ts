@@ -4,6 +4,7 @@ import {
   LanguageClient,
   NotificationRequest,
   nova,
+  Process,
   wrapCommand,
 } from "./nova_utils.ts";
 import registerFormatDocument from "./commands/format_document.ts";
@@ -37,11 +38,71 @@ function getHostsMap() {
   return hostsMap;
 }
 
+async function ensureDenoIsInstalled(): Promise<void> {
+  function startProcess(location: string, args: string[], cwd?: string) {
+    const options = {
+      args,
+      cwd,
+    };
+    const process = new Process(location, options);
+    const onExit = new Promise((resolve, reject) => {
+      process.onDidExit((status) => {
+        const action = status == 0 ? resolve : reject;
+        action(status);
+      });
+    });
+
+    process.start();
+    return onExit;
+  }
+
+  try {
+    await startProcess("/usr/bin/env", ["deno", "--version"]);
+  } catch (e) {
+    if (e == 127) {
+      const failureNotificationRequest = new NotificationRequest(
+        "co.gwil.deno.notifications.findSymbolUnavailable",
+      );
+      failureNotificationRequest.title = "Deno can't be found.";
+      failureNotificationRequest.body =
+        "To use the Deno extension, install Deno.";
+      failureNotificationRequest.actions = [
+        "Retry",
+        "Ignore",
+      ];
+
+      const { actionIdx } = await nova.notifications.add(
+        failureNotificationRequest,
+      );
+
+      if (actionIdx == 1) {
+        const informationalNotificationRequest = new NotificationRequest(
+          "co.gwil.deno.notifications.howToEnableIntelliSense",
+        );
+        informationalNotificationRequest.title = "If you change your mind…";
+        informationalNotificationRequest.body =
+          "Restart the extension to enable its features.";
+        nova.notifications.add(informationalNotificationRequest);
+
+        throw new Error("Can't ensure Deno is installed!");
+      } else {
+        return ensureDenoIsInstalled();
+      }
+    } else {
+      throw e;
+    }
+  }
+}
+
 // Indicates whether the server is being 'restarted' (replaced)
 let isRestarting = false;
 
-export function makeClientDisposable(parentDisposable: CompositeDisposable) {
+export async function makeClientDisposable(
+  parentDisposable: CompositeDisposable,
+) {
   const clientDisposable = new CompositeDisposable();
+
+  await ensureDenoIsInstalled();
 
   const client = new LanguageClient(
     "co.gwil.deno",
@@ -187,9 +248,9 @@ export function makeClientDisposable(parentDisposable: CompositeDisposable) {
       "co.gwil.deno.commands.restartServer",
       wrapCommand(() => {
         if (!isRestarting) {
-          const listener = client.onDidStop(() => {
+          const listener = client.onDidStop(async () => {
             listener.dispose();
-            parentDisposable.add(makeClientDisposable(parentDisposable));
+            parentDisposable.add(await makeClientDisposable(parentDisposable));
             isRestarting = false;
           });
 

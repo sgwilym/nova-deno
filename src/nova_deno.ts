@@ -24,14 +24,20 @@ const workspaceConfigRestartKeys = [
   "co.gwil.deno.config.import-map",
 ];
 
-export function activate() {
+export async function activate() {
   const workspacePath = nova.workspace.path;
   if (workspacePath) {
     watchConfigFile(workspacePath, "deno.json");
     watchConfigFile(workspacePath, "deno.jsonc");
   }
 
-  const clientDisposable = makeClientDisposable(compositeDisposable);
+  let clientDisposable;
+  try {
+    clientDisposable = await makeClientDisposable(compositeDisposable);
+  } catch {
+    // This happens if the user clicks on 'Ignore' after they are requested to install Deno.
+    return;
+  }
 
   compositeDisposable.add(clientDisposable);
 
