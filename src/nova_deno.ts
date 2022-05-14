@@ -1,4 +1,10 @@
-import { CompositeDisposable, nova } from "./nova_utils.ts";
+import {
+  CompositeDisposable,
+  Configuration,
+  nova,
+  TextDocument,
+  TextEditor,
+} from "./nova_utils.ts";
 import {
   registerBundleTask,
   registerDenoTasks,
@@ -38,6 +44,7 @@ export function activate() {
   compositeDisposable.add(registerDenoTasks());
   compositeDisposable.add(registerRunTask());
   compositeDisposable.add(registerBundleTask());
+  compositeDisposable.add(registerEditorWatcher());
 
   const configRestartDisposables = restartServerOnConfigChanges(
     configRestartKeys,
@@ -68,6 +75,69 @@ function watchConfigFile(workspacePath: string, filename: string) {
     nova.commands.invoke("co.gwil.deno.commands.restartServer");
   });
   compositeDisposable.add(configWatcher);
+}
+
+/**
+ * This is used to determine whether certain features, like the "Find Symbol"
+ * command, are available.
+ */
+function registerEditorWatcher() {
+  // This callback is called immediately and once. Then, it is called every time the user opens a text editor.
+  const disposable = new CompositeDisposable();
+
+  const compatibleSyntaxes = ["typescript", "tsx", "javascript", "jsx"];
+  function checkFeatureAvailability(
+    documents: readonly TextDocument[],
+  ) {
+    const syntaxes = documents.map((document) => document.syntax ?? "plain");
+    const isCompatible = compatibleSyntaxes.some((syntax) =>
+      syntaxes.includes(syntax)
+    );
+
+    if (isCompatible) {
+      // @ts-expect-error: The Nova types are outdated. This feature was added in version 5.
+      (nova.workspace.context as Configuration).set(
+        "shouldDisplayFeatures",
+        true,
+      );
+    } else {
+      // @ts-expect-error: for the reason above
+      (nova.workspace.context as Configuration).set(
+        "shouldDisplayFeatures",
+        false,
+      );
+    }
+  }
+
+  disposable.add(
+    nova.workspace.onDidAddTextEditor((editor) => {
+      checkFeatureAvailability(nova.workspace.textDocuments);
+
+      disposable.add(editor.document.onDidChangeSyntax(() => {
+        checkFeatureAvailability(nova.workspace.textDocuments);
+      }));
+
+      disposable.add(editor.onDidDestroy((deletedEditor) => {
+        const editors: (TextEditor | null)[] = [...nova.workspace.textEditors];
+
+        // remove one editor whose URI is the same as this editor's
+        const index = (editors as TextEditor[]).findIndex((editor) =>
+          editor.document.uri == deletedEditor.document.uri
+        );
+        editors[index] = null;
+        const remainingEditors = editors.filter((editor) =>
+          editor !== null
+        ) as TextEditor[];
+        const remainingDocuments = remainingEditors.map((editor) =>
+          editor.document
+        );
+
+        checkFeatureAvailability(remainingDocuments);
+      }));
+    }),
+  );
+
+  return disposable;
 }
 
 function restartServerOnConfigChanges(keys: string[]) {
