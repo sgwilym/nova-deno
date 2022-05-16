@@ -3,10 +3,10 @@
 Everything you need for TypeScript and JavaScript development, powered by the
 [Deno](https://deno.land) runtime.
 
-- TypeScript support out of the box.
+- Zero-config Typescript support.
 - A complete development toolchain including a **formatter**, **linter**, **test
   runner**, **bundler**, and **language server**.
-- Complete support for standard Web APIs like `fetch`, 'WebSocket', or the
+- Complete support for standard Web APIs like `fetch`, `WebSocket`, or the
   Streams API.
 - An audited [standard library](https://deno.land/std).
 - Dependencies without node_modules or package.json.
@@ -23,6 +23,7 @@ for Nova. This extension provides the following integrations with Nova:
 - Automatic formatting on save.
 - Commands for renaming symbols, caching dependencies, formatting documents, and
   renaming symbols.
+- Symbol search and dedicated sidebar.
 - Task templates for `deno run` and `deno bundle` commands.
 - Global and per-project configuration settings.
 
@@ -55,6 +56,7 @@ Support for Deno tasks requires Deno 1.20+.
 - **Cache** - Cache all external dependencies
 - **Format Document** - Format with Deno's formatter
 - **Rename symbol** - Rename variables, functions, etc.
+- **Find Symbol** - Search for symbols in the codebase
 - **Restart Deno LSP server** - You shouldn't have to do this, but it's nice to
   have when you start getting angry.
 
@@ -72,6 +74,11 @@ All of the below can be configured at a global and per-project basis (via
 The following is configurable only at a global scope:
 
 - Trusted and untrusted hosts for Import suggestions
+
+## Maintainers
+
+- [sgwilym](https://github.com/sgwilym)
+- [belcar-s](https://github.com/belcar-s)
 
 ## Shoutouts 📣
 

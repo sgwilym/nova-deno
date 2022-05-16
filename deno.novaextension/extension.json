@@ -3,14 +3,15 @@
   "name": "Deno",
   "organization": "Sam Gwilym",
   "description": "Everything you need for TypeScript and JavaScript development.",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "categories": [
     "languages",
     "formatters",
     "issues",
     "completions",
     "tasks",
-    "commands"
+    "commands",
+    "sidebars"
   ],
   "repository": "https://github.com/sgwilym/nova-deno",
   "bugs": "https://github.com/sgwilym/nova-deno/issues",
