@@ -1,3 +1,11 @@
+## v1.1.0
+
+- **Symbols**: This update adds a new 'Find Symbol' command and accompanying
+  Deno Symbols sidebar to show the results of your search. (thanks to
+  [belcar-s](https://github.com/belcar-s)!)m
+- The extension will now gracefully handle Deno not being installed
+  ([belcar-s](https://github.com/belcar-s)
+
 ## v1.0.4
 
 - Fixes an issue where tasks defined in a `deno.jsonc` config file would not be
