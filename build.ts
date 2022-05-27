@@ -1,13 +1,12 @@
 import * as esbuild from "https://deno.land/x/esbuild@v0.14.11/mod.js";
+import { bundle } from "https://deno.land/x/emit@0.0.2/mod.ts";
 
-const { files } = await Deno.emit("./src/nova_deno.ts", {
-  bundle: "module",
-});
+const { code } = await bundle(new URL("./src/nova_deno.ts", import.meta.url));
 
 esbuild
   .build({
     stdin: {
-      contents: files["deno:///bundle.js"],
+      contents: code,
     },
     outfile: "./deno.novaextension/Scripts/main.js",
     format: "cjs",
