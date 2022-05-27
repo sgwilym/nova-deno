@@ -314,12 +314,6 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
       disposable = createEventListener(updateSymbols);
     };
 
-    for (const textEditor of nova.workspace.textEditors) {
-      updateSymbolsAndManageDisposable(
-        textEditor.onDidStopChanging.bind(textEditor),
-      );
-    }
-
     nova.workspace.onDidAddTextEditor((textEditor) =>
       updateSymbolsAndManageDisposable(
         textEditor.onDidStopChanging.bind(textEditor),
