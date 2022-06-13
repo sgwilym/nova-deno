@@ -240,7 +240,10 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
     return this.treeView.reload();
   }
 
-  private setSymbols(lspSymbols: lsp.SymbolInformation[]) {
+  private setSymbols(
+    lspSymbols: lsp.SymbolInformation[],
+    didQueryChange: boolean,
+  ) {
     /**
      * This function takes several arrays. It maps each element of the first array to all elements among the arrays whose index is the same.
      *
@@ -312,12 +315,16 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
       this.headerMessage = `No results found for '${this.currentQuery}'.`;
     }
 
-    let shouldReload = false;
+    // We need to reload if the query changes in order to keep the `headerMessage` accurate.
+    let shouldReload = didQueryChange;
     for (const [newName, oldName] of zip(names, oldNames)) {
+      if (shouldReload) {
+        break;
+      }
+
       // If the symbols aren't in the same order, there's a need for reloading.
       if (newName != oldName) {
         shouldReload = true;
-        break;
       }
     }
 
@@ -330,6 +337,7 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
     query: string,
     getSymbols: (query: string) => Promise<lsp.SymbolInformation[] | null>,
   ) {
+    let didQueryChange = true;
     this.currentQuery = query;
 
     /**
@@ -349,7 +357,8 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
         }
 
         const symbols = await getSymbols(query) ?? [];
-        this.setSymbols(symbols);
+        this.setSymbols(symbols, didQueryChange);
+        didQueryChange = false;
       };
       updateSymbols();
 
