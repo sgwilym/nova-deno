@@ -198,7 +198,12 @@ class Symbol {
 }
 class SymbolDataProvider implements TreeDataProvider<Element> {
   private treeView: TreeView<Element>;
+
+  /**
+   * This property maps file URIs to `Symbol` objects whose location they contain.
+   */
   private symbols: Map<string, Symbol[]>;
+  private names: string[] | undefined;
   private files: File[];
   private currentQuery: string | null;
   private headerMessage: string | null;
@@ -236,45 +241,89 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
   }
 
   private setSymbols(lspSymbols: lsp.SymbolInformation[]) {
-    const symbols = lspSymbols.filter((lspSymbol) =>
-      // keep only symbols from real files
-      lspSymbol.location.uri.startsWith("file://")
-    ).map(
-      // turn into `Symbol`s
-      (lspSymbol) => new Symbol(lspSymbol),
-    );
-
-    this.symbols.clear();
-    for (const symbol of symbols) {
-      const { uri } = symbol.location;
-      this.symbols.set(
-        uri,
-        [...(this.symbols.get(uri) ?? []), symbol],
+    /**
+     * This function takes several arrays. It maps each element of the first array to all elements among the arrays whose index is the same.
+     *
+     * For example,
+     * ```js
+     * zip([1, 2, 3], [2, 4, 6])
+     * ```
+     * produces
+     * ```js
+     * [[1, 2], [2, 4], [3, 6]]
+     * ```
+     * .
+     */
+    function zip<Type>(...arrays: (Type[])[]): (Type[])[] {
+      const lengths = arrays.map((array) => array.length);
+      const largestArray = arrays[lengths.indexOf(Math.max(...lengths))];
+      return largestArray.map((_item, index) =>
+        arrays.map((item) => item[index])
       );
     }
+    const names = [];
+    const oldNames = [...(this.names ?? [])];
 
-    this.files = Array.from(this.symbols.keys()).map((uri) =>
-      new File(uri, this.symbols.get(uri)!)
-    );
+    this.symbols.clear();
 
-    function findDuplicates<Type>(array: Type[]): Type[] {
-      const seenItems: Type[] = [];
-      const duplicates: Type[] = [];
+    const seenFilenames: string[] = [];
+    const duplicateFilenames = [];
 
-      for (const item of array) {
-        if (seenItems.includes(item)) {
-          duplicates.push(item);
-        }
-        seenItems.push(item);
+    const files = [];
+
+    for (const lspSymbol of lspSymbols) {
+      // add members to `this.symbols`
+      if (lspSymbol.location.uri.startsWith("file://")) {
+        const symbol = new Symbol(lspSymbol);
+
+        // store each name
+        names.push(symbol.name);
+
+        const { uri } = symbol.location;
+        this.symbols.set(
+          uri,
+          [...(this.symbols.get(uri) ?? []), symbol],
+        );
       }
-
-      return duplicates;
     }
-    this.ambiguousFilenames = findDuplicates(
-      this.files.map((file) => file.filename),
-    );
 
-    return this.symbols;
+    this.names = names;
+    // The value of `this.symbols` is already set by the time this code runs.
+
+    for (const uri of this.symbols.keys()) {
+      // create `File` objects for each URI
+      const file = new File(uri, this.symbols.get(uri)!);
+      files.push(file);
+
+      // find duplicates…
+      if (seenFilenames.includes(file.filename)) {
+        duplicateFilenames.push(file.filename);
+      }
+      // …by keeping track of all the filenames
+      seenFilenames.push(file.filename);
+    }
+
+    this.files = files;
+    this.ambiguousFilenames = duplicateFilenames;
+
+    if (this.symbols.size) {
+      this.headerMessage = `Results for '${this.currentQuery}':`;
+    } else {
+      this.headerMessage = `No results found for '${this.currentQuery}'.`;
+    }
+
+    let shouldReload = false;
+    for (const [newName, oldName] of zip(names, oldNames)) {
+      // If the symbols aren't in the same order, there's a need for reloading.
+      if (newName != oldName) {
+        shouldReload = true;
+        break;
+      }
+    }
+
+    if (shouldReload) {
+      this.reload();
+    }
   }
 
   displaySymbols(
@@ -300,14 +349,7 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
         }
 
         const symbols = await getSymbols(query) ?? [];
-        const displayedSymbols = this.setSymbols(symbols);
-
-        if (displayedSymbols.size) {
-          this.headerMessage = `Results for '${query}':`;
-        } else {
-          this.headerMessage = `No results found for '${query}'.`;
-        }
-        this.reload();
+        this.setSymbols(symbols);
       };
       updateSymbols();
 
