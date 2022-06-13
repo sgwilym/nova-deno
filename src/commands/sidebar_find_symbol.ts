@@ -65,12 +65,15 @@ class Header implements Element {
 class Symbol implements Element {
   name: string;
   type: string;
-  location: lsp.Location;
   children: [];
-  constructor(lspSymbol: lsp.SymbolInformation) {
+  private getLocation: () => lsp.Location;
+  constructor(
+    lspSymbol: lsp.SymbolInformation,
+    getLocation: () => lsp.Location,
+  ) {
     this.name = lspSymbol.name;
     this.type = this.getType(lspSymbol);
-    this.location = lspSymbol.location;
+    this.getLocation = getLocation;
     this.children = [];
   }
 
@@ -186,8 +189,8 @@ class Symbol implements Element {
   }
 
   async show() {
-    const uri = this.location.uri;
-    const lspRange = this.location.range;
+    const uri = this.getLocation().uri;
+    const lspRange = this.getLocation().range;
 
     const editor = await nova.workspace.openFile(uri);
     if (!editor) {
@@ -207,7 +210,11 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
    */
   private symbols: Map<string, Symbol[]>;
   private names: string[] | undefined;
+
   private files: File[];
+
+  private locations: Map<number, lsp.Location>;
+
   private currentQuery: string | null;
   private headerMessage: string | null;
   private ambiguousFilenames: string[];
@@ -219,6 +226,7 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
     this.treeView.onDidChangeSelection(this.onDidChangeSelection);
 
     this.symbols = new Map();
+    this.locations = new Map();
     this.files = [];
     this.ambiguousFilenames = [];
 
@@ -271,25 +279,37 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
     const oldNames = [...(this.names ?? [])];
 
     this.symbols.clear();
+    this.locations.clear();
 
     const seenFilenames: string[] = [];
     const duplicateFilenames = [];
 
     const files = [];
 
+    let index = 0;
     for (const lspSymbol of lspSymbols) {
+      const { uri } = lspSymbol.location;
+
       // add members to `this.symbols`
-      if (lspSymbol.location.uri.startsWith("file://")) {
-        const symbol = new Symbol(lspSymbol);
+      if (uri.startsWith("file://")) {
+        const locations = this.locations;
+        locations.set(index, lspSymbol.location);
+        console.log(index);
+
+        // mystery… just kidding.
+        // We need to make a copy because `index` otherwise evaluates (usually, if not always) to the value to which it is bound at the end of the loop, rather than to the value to which it is bound at the time at which this code runs. I was very amazed by this behavior. Let me know if you, the reader, expected it.
+        const index1 = index;
+        const symbol = new Symbol(lspSymbol, () => locations.get(index1)!);
 
         // store each name
         names.push(symbol.name);
 
-        const { uri } = symbol.location;
         this.symbols.set(
           uri,
           [...(this.symbols.get(uri) ?? []), symbol],
         );
+
+        index++;
       }
     }
 
