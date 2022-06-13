@@ -17,8 +17,11 @@ let symbolDataProvider: SymbolDataProvider | null = null;
 interface ElementConversionOptions {
   shouldDisambiguate?: boolean;
 }
-type Element = File | Header | Symbol;
-class File {
+interface Element {
+  toTreeItem: (options: ElementConversionOptions) => TreeItem;
+  children: Element[];
+}
+class File implements Element {
   uri: string;
   extension: string;
   children: Symbol[];
@@ -46,7 +49,7 @@ class File {
     return item;
   }
 }
-class Header {
+class Header implements Element {
   content: string;
   children: [];
   constructor(content: string) {
@@ -59,7 +62,7 @@ class Header {
     return item;
   }
 }
-class Symbol {
+class Symbol implements Element {
   name: string;
   type: string;
   location: lsp.Location;
