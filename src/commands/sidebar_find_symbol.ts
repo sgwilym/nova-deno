@@ -14,31 +14,36 @@ import {
 import { lsp } from "../../deps.ts";
 let symbolDataProvider: SymbolDataProvider | null = null;
 
-interface ElementConversionOptions {
-  shouldDisambiguate?: boolean;
+function getFilename(uri: string) {
+  return decodeURIComponent(uri).split("/").pop()!;
 }
-type Element = File | Header | Symbol;
-class File {
+
+interface Element {
+  toTreeItem: () => TreeItem;
+  children: Element[];
+}
+class File implements Element {
   uri: string;
   extension: string;
   children: Symbol[];
-  constructor(uri: string, children: Symbol[]) {
+  shouldDisambiguate: boolean;
+
+  constructor(uri: string, children: Symbol[], shouldDisambiguate: boolean) {
     this.uri = uri;
     this.extension = uri.split(".").pop()!;
     this.children = children;
+    this.shouldDisambiguate = shouldDisambiguate;
   }
 
   get filename(): string {
-    return decodeURIComponent(this.uri).split("/").pop()!;
+    return getFilename(this.uri);
   }
 
-  toTreeItem(
-    { shouldDisambiguate }: ElementConversionOptions = {},
-  ) {
+  toTreeItem() {
     const path = decodeURIComponent(this.uri.slice(this.uri.indexOf(":") + 1));
     const relativePath: string = nova.workspace.relativizePath(path);
     const item = new TreeItem(
-      shouldDisambiguate ? relativePath : this.filename,
+      this.shouldDisambiguate ? relativePath : this.filename,
     );
 
     item.image = "__filetype." + this.extension;
@@ -46,7 +51,7 @@ class File {
     return item;
   }
 }
-class Header {
+class Header implements Element {
   content: string;
   children: [];
   constructor(content: string) {
@@ -59,15 +64,18 @@ class Header {
     return item;
   }
 }
-class Symbol {
+class Symbol implements Element {
   name: string;
   type: string;
-  location: lsp.Location;
   children: [];
-  constructor(lspSymbol: lsp.SymbolInformation) {
+  private getLocation: () => lsp.Location;
+  constructor(
+    lspSymbol: lsp.SymbolInformation,
+    getLocation: () => lsp.Location,
+  ) {
     this.name = lspSymbol.name;
     this.type = this.getType(lspSymbol);
-    this.location = lspSymbol.location;
+    this.getLocation = getLocation;
     this.children = [];
   }
 
@@ -183,8 +191,8 @@ class Symbol {
   }
 
   async show() {
-    const uri = this.location.uri;
-    const lspRange = this.location.range;
+    const uri = this.getLocation().uri;
+    const lspRange = this.getLocation().range;
 
     const editor = await nova.workspace.openFile(uri);
     if (!editor) {
@@ -198,11 +206,15 @@ class Symbol {
 }
 class SymbolDataProvider implements TreeDataProvider<Element> {
   private treeView: TreeView<Element>;
-  private symbols: Map<string, Symbol[]>;
+
+  // The locations need to be stored separately to enable the sidebar to reload infrequently.
+  private locations: Map<number, lsp.Location>;
   private files: File[];
+
+  private previousNames: string[] | undefined;
+
   private currentQuery: string | null;
   private headerMessage: string | null;
-  private ambiguousFilenames: string[];
 
   constructor() {
     this.treeView = new TreeView("co.gwil.deno.sidebars.symbols.sections.1", {
@@ -210,9 +222,8 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
     });
     this.treeView.onDidChangeSelection(this.onDidChangeSelection);
 
-    this.symbols = new Map();
+    this.locations = new Map();
     this.files = [];
-    this.ambiguousFilenames = [];
 
     this.headerMessage = null;
     this.currentQuery = null;
@@ -235,52 +246,90 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
     return this.treeView.reload();
   }
 
-  private setSymbols(lspSymbols: lsp.SymbolInformation[]) {
-    const symbols = lspSymbols.filter((lspSymbol) =>
-      // keep only symbols from real files
-      lspSymbol.location.uri.startsWith("file://")
-    ).map(
-      // turn into `Symbol`s
-      (lspSymbol) => new Symbol(lspSymbol),
-    );
+  private setSymbols(
+    lspSymbols: lsp.SymbolInformation[],
+    didQueryChange: boolean,
+  ) {
+    this.locations.clear();
 
-    this.symbols.clear();
-    for (const symbol of symbols) {
-      const { uri } = symbol.location;
-      this.symbols.set(
-        uri,
-        [...(this.symbols.get(uri) ?? []), symbol],
+    const symbolMap = new Map<string, Symbol[]>();
+    const names: string[] = [];
+    const oldNames = this.previousNames ?? [];
+
+    let index = 0;
+    for (const lspSymbol of lspSymbols) {
+      const { uri } = lspSymbol.location;
+      if (uri.startsWith("file://")) {
+        this.locations.set(index, lspSymbol.location);
+
+        // We need to make a copy because `index` otherwise evaluates (usually, if not always) to the value to which it is bound at the end of the loop, rather than to the value to which it is bound at the time at which this code runs. I was very amazed by this behavior. Let me know if you, the reader, expected it.
+        const index1 = index;
+        const symbol = new Symbol(lspSymbol, () => this.locations.get(index1)!);
+        symbolMap.set(uri, [
+          ...(symbolMap.get(uri) ?? []),
+          symbol,
+        ]);
+        names.push(symbol.name);
+
+        index++;
+      }
+    }
+
+    const seenFilenames: string[] = [];
+    const ambiguousFilenames: string[] = [];
+    for (const [uri] of symbolMap) {
+      const filename = getFilename(uri);
+      if (seenFilenames.includes(filename)) {
+        ambiguousFilenames.push(filename);
+      }
+      seenFilenames.push(filename);
+    }
+
+    const files: File[] = [];
+    for (const [uri, symbols] of symbolMap) {
+      const filename = getFilename(uri);
+      files.push(
+        new File(uri, symbols, ambiguousFilenames.includes(filename)),
       );
     }
 
-    this.files = Array.from(this.symbols.keys()).map((uri) =>
-      new File(uri, this.symbols.get(uri)!)
-    );
-
-    function findDuplicates<Type>(array: Type[]): Type[] {
-      const seenItems: Type[] = [];
-      const duplicates: Type[] = [];
-
-      for (const item of array) {
-        if (seenItems.includes(item)) {
-          duplicates.push(item);
-        }
-        seenItems.push(item);
-      }
-
-      return duplicates;
+    this.files = files;
+    if (this.files.length) {
+      this.headerMessage = `Results for '${this.currentQuery}':`;
+    } else {
+      this.headerMessage = `No results found for '${this.currentQuery}'.`;
     }
-    this.ambiguousFilenames = findDuplicates(
-      this.files.map((file) => file.filename),
-    );
 
-    return this.symbols;
+    function zip<Type>(...arrays: (Type[])[]): (Type[])[] {
+      const lengths = arrays.map((array) => array.length);
+      const largestArray = arrays[lengths.indexOf(Math.max(...lengths))];
+      return largestArray.map((_item, index) =>
+        arrays.map((item) => item[index])
+      );
+    }
+
+    // We need to reload if the query changes in order to keep the `headerMessage` accurate.
+    let shouldReload = didQueryChange;
+    for (const [newName, oldName] of zip(names, oldNames)) {
+      if (shouldReload) {
+        break;
+      }
+      if (newName != oldName) {
+        shouldReload = true;
+      }
+    }
+
+    if (shouldReload) {
+      this.reload();
+    }
+    this.previousNames = names;
   }
 
   displaySymbols(
     query: string,
     getSymbols: (query: string) => Promise<lsp.SymbolInformation[] | null>,
   ) {
+    let didQueryChange = true;
     this.currentQuery = query;
 
     /**
@@ -300,14 +349,8 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
         }
 
         const symbols = await getSymbols(query) ?? [];
-        const displayedSymbols = this.setSymbols(symbols);
-
-        if (displayedSymbols.size) {
-          this.headerMessage = `Results for '${query}':`;
-        } else {
-          this.headerMessage = `No results found for '${query}'.`;
-        }
-        this.reload();
+        this.setSymbols(symbols, didQueryChange);
+        didQueryChange = false;
       };
       updateSymbols();
 
@@ -337,11 +380,7 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
   }
 
   getTreeItem(element: Element) {
-    const options: ElementConversionOptions = {
-      shouldDisambiguate: element instanceof File &&
-        this.ambiguousFilenames.includes(element.filename),
-    };
-    return element.toTreeItem(options);
+    return element.toTreeItem();
   }
 }
 
