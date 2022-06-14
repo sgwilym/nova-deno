@@ -107,6 +107,12 @@
       "default": "null"
     },
     {
+      "key": "co.gwil.deno.config.enabledPaths",
+      "title": "Enabled Paths",
+      "description": "Choose paths in which to enable Deno integration. For features to be enabled invariably, leave this blank.",
+      "type": "pathArray"
+    },
+    {
       "key": "co.gwil.deno.config.enableLinting",
       "title": "Enable linting",
       "description": "Turn on Deno's built-in linting.",
