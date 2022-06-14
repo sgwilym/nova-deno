@@ -108,7 +108,7 @@
     },
     {
       "key": "co.gwil.deno.config.enabledPaths",
-      "title": "Enabled Paths",
+      "title": "Enabled paths",
       "description": "Choose paths in which to enable Deno integration. For features to be enabled invariably, leave this blank.",
       "type": "pathArray"
     },
