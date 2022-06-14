@@ -17,6 +17,14 @@ import syntaxes from "./syntaxes.ts";
 const FORMAT_ON_SAVE_CONFIG_KEY = "co.gwil.deno.config.formatOnSave";
 const TRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.trustedImportHosts";
 const UNTRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.untrustedImportHosts";
+const ENABLED_PATHS_CONFIG_KEY = "co.gwil.deno.config.enabledPaths";
+
+const KEYS_OF_CONFIG_ITEMS_ON_WHOSE_CHANGES_TO_RESTART = [
+  FORMAT_ON_SAVE_CONFIG_KEY,
+  TRUSTED_HOSTS_CONFIG_KEY,
+  UNTRUSTED_HOSTS_CONFIG_KEY,
+  ENABLED_PATHS_CONFIG_KEY,
+];
 
 // Deno expects a map of hosts for its autosuggestion feature, where each key is a URL and its value a bool representing whether it is trusted or not. Nova does not have a Configurable like this, so we'll have to assemble one out of two arrays.
 
@@ -118,6 +126,8 @@ export async function makeClientDisposable(
       syntaxes,
       initializationOptions: {
         enable: getOverridableBoolean("co.gwil.deno.config.enableLsp"),
+        // FIXME: I don't know if there's a need to handle the config value being null.
+        enablePaths: nova.workspace.config.get(ENABLED_PATHS_CONFIG_KEY),
         lint: getOverridableBoolean("co.gwil.deno.config.enableLinting"),
         unstable: getOverridableBoolean("co.gwil.deno.config.enableUnstable"),
         importMap: nova.workspace.config.get("co.gwil.deno.config.import-map"),
@@ -159,19 +169,14 @@ export async function makeClientDisposable(
         editor.document.onDidChangeSyntax(refreshOnSaveListener),
       );
 
-      editorDisposable.add(
-        nova.workspace.config.onDidChange(
-          FORMAT_ON_SAVE_CONFIG_KEY,
-          refreshOnSaveListener,
-        ),
-      );
-
-      editorDisposable.add(
-        nova.config.onDidChange(
-          FORMAT_ON_SAVE_CONFIG_KEY,
-          refreshOnSaveListener,
-        ),
-      );
+      for (const key of KEYS_OF_CONFIG_ITEMS_ON_WHOSE_CHANGES_TO_RESTART) {
+        editorDisposable.add(
+          nova.workspace.config.onDidChange(
+            key,
+            refreshOnSaveListener,
+          ),
+        );
+      }
 
       let willSaveListener = setupOnSaveListener();
       clientDisposable.add({
