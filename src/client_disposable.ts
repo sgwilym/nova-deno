@@ -19,13 +19,6 @@ const TRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.trustedImportHosts";
 const UNTRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.untrustedImportHosts";
 const ENABLED_PATHS_CONFIG_KEY = "co.gwil.deno.config.enabledPaths";
 
-const KEYS_OF_CONFIG_ITEMS_ON_WHOSE_CHANGES_TO_RESTART = [
-  FORMAT_ON_SAVE_CONFIG_KEY,
-  TRUSTED_HOSTS_CONFIG_KEY,
-  UNTRUSTED_HOSTS_CONFIG_KEY,
-  ENABLED_PATHS_CONFIG_KEY,
-];
-
 // Deno expects a map of hosts for its autosuggestion feature, where each key is a URL and its value a bool representing whether it is trusted or not. Nova does not have a Configurable like this, so we'll have to assemble one out of two arrays.
 
 function getHostsMap() {
@@ -169,14 +162,19 @@ export async function makeClientDisposable(
         editor.document.onDidChangeSyntax(refreshOnSaveListener),
       );
 
-      for (const key of KEYS_OF_CONFIG_ITEMS_ON_WHOSE_CHANGES_TO_RESTART) {
-        editorDisposable.add(
-          nova.workspace.config.onDidChange(
-            key,
-            refreshOnSaveListener,
-          ),
-        );
-      }
+      editorDisposable.add(
+        nova.workspace.config.onDidChange(
+          FORMAT_ON_SAVE_CONFIG_KEY,
+          refreshOnSaveListener,
+        ),
+      );
+
+      editorDisposable.add(
+        nova.config.onDidChange(
+          FORMAT_ON_SAVE_CONFIG_KEY,
+          refreshOnSaveListener,
+        ),
+      );
 
       let willSaveListener = setupOnSaveListener();
       clientDisposable.add({
