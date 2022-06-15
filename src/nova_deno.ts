@@ -25,6 +25,7 @@ const configRestartKeys = [
 
 const workspaceConfigRestartKeys = [
   "co.gwil.deno.config.enableLsp",
+  "co.gwil.deno.config.enabledPaths",
   "co.gwil.deno.config.enableLinting",
   "co.gwil.deno.config.enableUnstable",
   "co.gwil.deno.config.import-map",
