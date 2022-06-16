@@ -146,20 +146,20 @@ function registerEditorWatcher() {
       }));
 
       disposable.add(editor.onDidDestroy((deletedEditor) => {
-        const editors: (TextEditor | null)[] = [...nova.workspace.textEditors];
+        // TODO: remember what this copy is for
+        const editors = [...nova.workspace.textEditors];
 
         // remove one editor whose URI is the same as this editor's
-        const index = (editors as TextEditor[]).findIndex((editor) =>
-          editor.document.uri == deletedEditor.document.uri
+        const index = (editors as TextEditor[]).findIndex(
+          (editor) => editor.document.uri === deletedEditor.document.uri,
         );
-        editors[index] = null;
-        const remainingEditors = editors.filter((editor) =>
-          editor !== null
-        ) as TextEditor[];
-        const remainingDocuments = remainingEditors.map((editor) =>
-          editor.document
+        const remainingEditors = editors.filter(
+          (_editor, editorIndex) => editorIndex !== index,
         );
 
+        const remainingDocuments = remainingEditors.map(
+          (editor) => editor.document,
+        );
         checkFeatureAvailability(remainingDocuments);
       }));
     }),
