@@ -14,34 +14,36 @@ import {
 import { lsp } from "../../deps.ts";
 let symbolDataProvider: SymbolDataProvider | null = null;
 
-interface ElementConversionOptions {
-  shouldDisambiguate?: boolean;
+function getFilename(uri: string) {
+  return decodeURIComponent(uri).split("/").pop()!;
 }
+
 interface Element {
-  toTreeItem: (options: ElementConversionOptions) => TreeItem;
+  toTreeItem: () => TreeItem;
   children: Element[];
 }
 class File implements Element {
   uri: string;
   extension: string;
   children: Symbol[];
-  constructor(uri: string, children: Symbol[]) {
+  shouldDisambiguate: boolean;
+
+  constructor(uri: string, children: Symbol[], shouldDisambiguate: boolean) {
     this.uri = uri;
     this.extension = uri.split(".").pop()!;
     this.children = children;
+    this.shouldDisambiguate = shouldDisambiguate;
   }
 
   get filename(): string {
-    return decodeURIComponent(this.uri).split("/").pop()!;
+    return getFilename(this.uri);
   }
 
-  toTreeItem(
-    { shouldDisambiguate }: ElementConversionOptions = {},
-  ) {
+  toTreeItem() {
     const path = decodeURIComponent(this.uri.slice(this.uri.indexOf(":") + 1));
     const relativePath: string = nova.workspace.relativizePath(path);
     const item = new TreeItem(
-      shouldDisambiguate ? relativePath : this.filename,
+      this.shouldDisambiguate ? relativePath : this.filename,
     );
 
     item.image = "__filetype." + this.extension;
@@ -205,19 +207,14 @@ class Symbol implements Element {
 class SymbolDataProvider implements TreeDataProvider<Element> {
   private treeView: TreeView<Element>;
 
-  /**
-   * This property maps file URIs to `Symbol` objects whose location they contain.
-   */
-  private symbols: Map<string, Symbol[]>;
-  private names: string[] | undefined;
-
+  // The locations need to be stored separately to enable the sidebar to reload infrequently.
+  private locations: Map<number, lsp.Location>;
   private files: File[];
 
-  private locations: Map<number, lsp.Location>;
+  private previousNames: string[] | undefined;
 
   private currentQuery: string | null;
   private headerMessage: string | null;
-  private ambiguousFilenames: string[];
 
   constructor() {
     this.treeView = new TreeView("co.gwil.deno.sidebars.symbols.sections.1", {
@@ -225,10 +222,8 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
     });
     this.treeView.onDidChangeSelection(this.onDidChangeSelection);
 
-    this.symbols = new Map();
     this.locations = new Map();
     this.files = [];
-    this.ambiguousFilenames = [];
 
     this.headerMessage = null;
     this.currentQuery = null;
@@ -255,87 +250,62 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
     lspSymbols: lsp.SymbolInformation[],
     didQueryChange: boolean,
   ) {
-    /**
-     * This function takes several arrays. It maps each element of the first array to all elements among the arrays whose index is the same.
-     *
-     * For example,
-     * ```js
-     * zip([1, 2, 3], [2, 4, 6])
-     * ```
-     * produces
-     * ```js
-     * [[1, 2], [2, 4], [3, 6]]
-     * ```
-     * .
-     */
+    this.locations.clear();
+
+    const symbolMap = new Map<string, Symbol[]>();
+    const names: string[] = [];
+    const oldNames = this.previousNames ?? [];
+
+    let index = 0;
+    for (const lspSymbol of lspSymbols) {
+      const { uri } = lspSymbol.location;
+      if (uri.startsWith("file://")) {
+        this.locations.set(index, lspSymbol.location);
+
+        // We need to make a copy because `index` otherwise evaluates (usually, if not always) to the value to which it is bound at the end of the loop, rather than to the value to which it is bound at the time at which this code runs. I was very amazed by this behavior. Let me know if you, the reader, expected it.
+        const index1 = index;
+        const symbol = new Symbol(lspSymbol, () => this.locations.get(index1)!);
+        symbolMap.set(uri, [
+          ...(symbolMap.get(uri) ?? []),
+          symbol,
+        ]);
+        names.push(symbol.name);
+
+        index++;
+      }
+    }
+
+    const seenFilenames: string[] = [];
+    const ambiguousFilenames: string[] = [];
+    for (const [uri] of symbolMap) {
+      const filename = getFilename(uri);
+      if (seenFilenames.includes(filename)) {
+        ambiguousFilenames.push(filename);
+      }
+      seenFilenames.push(filename);
+    }
+
+    const files: File[] = [];
+    for (const [uri, symbols] of symbolMap) {
+      const filename = getFilename(uri);
+      files.push(
+        new File(uri, symbols, ambiguousFilenames.includes(filename)),
+      );
+    }
+
+    this.files = files;
+    if (this.files.length) {
+      this.headerMessage = `Results for '${this.currentQuery}':`;
+    } else {
+      this.headerMessage = `No results found for '${this.currentQuery}'.`;
+    }
+
     function zip<Type>(...arrays: (Type[])[]): (Type[])[] {
       const lengths = arrays.map((array) => array.length);
       const largestArray = arrays[lengths.indexOf(Math.max(...lengths))];
       return largestArray.map((_item, index) =>
         arrays.map((item) => item[index])
       );
-    }
-    const names = [];
-    const oldNames = [...(this.names ?? [])];
-
-    this.symbols.clear();
-    this.locations.clear();
-
-    const seenFilenames: string[] = [];
-    const duplicateFilenames = [];
-
-    const files = [];
-
-    let index = 0;
-    for (const lspSymbol of lspSymbols) {
-      const { uri } = lspSymbol.location;
-
-      // add members to `this.symbols`
-      if (uri.startsWith("file://")) {
-        const locations = this.locations;
-        locations.set(index, lspSymbol.location);
-        console.log(index);
-
-        // mystery… just kidding.
-        // We need to make a copy because `index` otherwise evaluates (usually, if not always) to the value to which it is bound at the end of the loop, rather than to the value to which it is bound at the time at which this code runs. I was very amazed by this behavior. Let me know if you, the reader, expected it.
-        const index1 = index;
-        const symbol = new Symbol(lspSymbol, () => locations.get(index1)!);
-
-        // store each name
-        names.push(symbol.name);
-
-        this.symbols.set(
-          uri,
-          [...(this.symbols.get(uri) ?? []), symbol],
-        );
-
-        index++;
-      }
-    }
-
-    this.names = names;
-    // The value of `this.symbols` is already set by the time this code runs.
-
-    for (const uri of this.symbols.keys()) {
-      // create `File` objects for each URI
-      const file = new File(uri, this.symbols.get(uri)!);
-      files.push(file);
-
-      // find duplicates…
-      if (seenFilenames.includes(file.filename)) {
-        duplicateFilenames.push(file.filename);
-      }
-      // …by keeping track of all the filenames
-      seenFilenames.push(file.filename);
-    }
-
-    this.files = files;
-    this.ambiguousFilenames = duplicateFilenames;
-
-    if (this.symbols.size) {
-      this.headerMessage = `Results for '${this.currentQuery}':`;
-    } else {
-      this.headerMessage = `No results found for '${this.currentQuery}'.`;
     }
 
     // We need to reload if the query changes in order to keep the `headerMessage` accurate.
@@ -344,8 +314,6 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
       if (shouldReload) {
         break;
       }
-
-      // If the symbols aren't in the same order, there's a need for reloading.
       if (newName != oldName) {
         shouldReload = true;
       }
@@ -354,6 +322,7 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
     if (shouldReload) {
       this.reload();
     }
+    this.previousNames = names;
   }
 
   displaySymbols(
@@ -411,11 +380,7 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
   }
 
   getTreeItem(element: Element) {
-    const options: ElementConversionOptions = {
-      shouldDisambiguate: element instanceof File &&
-        this.ambiguousFilenames.includes(element.filename),
-    };
-    return element.toTreeItem(options);
+    return element.toTreeItem();
   }
 }
 
