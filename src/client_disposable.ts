@@ -40,6 +40,7 @@ function getHostsMap() {
   return hostsMap;
 }
 
+export class CanNotEnsureError extends Error {}
 async function ensureDenoIsInstalled(): Promise<void> {
   function startProcess(location: string, args: string[], cwd?: string) {
     const options = {
@@ -86,7 +87,7 @@ async function ensureDenoIsInstalled(): Promise<void> {
           "Restart the extension to enable its features.";
         nova.notifications.add(informationalNotificationRequest);
 
-        throw new Error("Can't ensure Deno is installed!");
+        throw new CanNotEnsureError("Can't ensure Deno is installed!");
       } else {
         return ensureDenoIsInstalled();
       }

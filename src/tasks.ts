@@ -9,12 +9,16 @@ import {
 } from "./nova_utils.ts";
 import { stripJSONcomments } from "../deps.ts";
 
+export const configFilenames = [
+  "deno.json",
+  "deno.jsonc",
+];
+
 class DenoTaskAssistant implements TaskAssistant {
   provideTasks() {
-    return [
-      ...this.getTasksFromFilename("deno.json"),
-      ...this.getTasksFromFilename("deno.jsonc"),
-    ];
+    return configFilenames.map((filename) =>
+      this.getTasksFromFilename(filename)
+    ).flat();
   }
 
   private getTasksFromFilename(filename: string) {
