@@ -10,7 +10,10 @@ import {
   registerDenoTasks,
   registerRunTask,
 } from "./tasks.ts";
-import { makeClientDisposable } from "./client_disposable.ts";
+import {
+  CanNotEnsureError,
+  makeClientDisposable,
+} from "./client_disposable.ts";
 
 const compositeDisposable = new CompositeDisposable();
 const taskDisposable = new CompositeDisposable();
@@ -40,11 +43,14 @@ export async function activate() {
   let clientDisposable;
   try {
     clientDisposable = await makeClientDisposable(compositeDisposable);
-  } catch {
-    // This happens if the user clicks on 'Ignore' after they are requested to install Deno.
-    return;
-  }
+  } catch (e) {
+    if (e instanceof CanNotEnsureError) {
+      // This happens if the user clicks on 'Ignore' after they are requested to install Deno.
+      return;
+    }
 
+    throw e;
+  }
   compositeDisposable.add(clientDisposable);
 
   compositeDisposable.add(registerDenoTasks());
