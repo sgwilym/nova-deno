@@ -9,6 +9,11 @@ import {
 } from "./nova_utils.ts";
 import { stripJSONcomments } from "../deps.ts";
 
+export const configFilenames = [
+  "deno.json",
+  "deno.jsonc",
+];
+
 class DenoTaskAssistant implements TaskAssistant {
   provideTasks() {
     return [
