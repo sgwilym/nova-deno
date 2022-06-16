@@ -130,19 +130,11 @@ function registerEditorWatcher() {
       syntaxes.includes(syntax)
     );
 
-    if (isCompatible) {
-      // @ts-expect-error: The Nova types are outdated. This feature was added in version 5.
-      (nova.workspace.context as Configuration).set(
-        "shouldDisplayFeatures",
-        true,
-      );
-    } else {
-      // @ts-expect-error: for the reason above
-      (nova.workspace.context as Configuration).set(
-        "shouldDisplayFeatures",
-        false,
-      );
-    }
+    // @ts-expect-error: The Nova types are outdated. This feature was added in version 5.
+    (nova.workspace.context as Configuration).set(
+      "shouldDisplayFeatures",
+      isCompatible,
+    );
   }
 
   disposable.add(
