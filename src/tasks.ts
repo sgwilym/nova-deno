@@ -16,10 +16,9 @@ export const configFilenames = [
 
 class DenoTaskAssistant implements TaskAssistant {
   provideTasks() {
-    return [
-      ...this.getTasksFromFilename("deno.json"),
-      ...this.getTasksFromFilename("deno.jsonc"),
-    ];
+    return configFilenames.map((filename) =>
+      this.getTasksFromFilename(filename)
+    ).flat();
   }
 
   private getTasksFromFilename(filename: string) {
