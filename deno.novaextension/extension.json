@@ -189,7 +189,7 @@
             {
               "title": "Run",
               "command": "co.gwil.deno.sidebars.tests.commands.run",
-              "when": "viewItem == \"file\""
+              "when": "viewItem == 'file'"
             }
           ]
         }
