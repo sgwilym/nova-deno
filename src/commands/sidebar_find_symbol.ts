@@ -48,6 +48,7 @@ class File implements Element {
 
     item.image = "__filetype." + this.extension;
     item.collapsibleState = TreeItemCollapsibleState.Expanded;
+    item.identifier = this.uri;
     return item;
   }
 }
@@ -67,15 +68,18 @@ class Header implements Element {
 class Symbol implements Element {
   name: string;
   type: string;
+  identifier: string;
   children: [];
   private getLocation: () => lsp.Location;
   constructor(
     lspSymbol: lsp.SymbolInformation,
     getLocation: () => lsp.Location,
+    identifier: string,
   ) {
     this.name = lspSymbol.name;
     this.type = this.getType(lspSymbol);
     this.getLocation = getLocation;
+    this.identifier = identifier;
     this.children = [];
   }
 
@@ -187,6 +191,7 @@ class Symbol implements Element {
   toTreeItem() {
     const item = new TreeItem(this.name);
     item.image = "__symbol." + this.type;
+    item.identifier = this.identifier;
     return item;
   }
 
@@ -264,7 +269,11 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
 
         // We need to make a copy because `index` otherwise evaluates (usually, if not always) to the value to which it is bound at the end of the loop, rather than to the value to which it is bound at the time at which this code runs. I was very amazed by this behavior. Let me know if you, the reader, expected it.
         const index1 = index;
-        const symbol = new Symbol(lspSymbol, () => this.locations.get(index1)!);
+        const symbol = new Symbol(
+          lspSymbol,
+          () => this.locations.get(index1)!,
+          String(index1),
+        );
         symbolMap.set(uri, [
           ...(symbolMap.get(uri) ?? []),
           symbol,
