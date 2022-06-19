@@ -204,8 +204,8 @@ class Symbol implements Element {
     editor.scrollToPosition(range.start);
   }
 }
-class SymbolDataProvider implements TreeDataProvider<Element> {
-  private treeView: TreeView<Element>;
+export default class SymbolDataProvider implements TreeDataProvider<Element> {
+  treeView: TreeView<Element>;
 
   // The locations need to be stored separately to enable the sidebar to reload infrequently.
   private locations: Map<number, lsp.Location>;
@@ -381,54 +381,5 @@ class SymbolDataProvider implements TreeDataProvider<Element> {
 
   getTreeItem(element: Element) {
     return element.toTreeItem();
-  }
-}
-
-export default function registerFindSymbol(client: LanguageClient) {
-  return nova.commands.register(
-    "co.gwil.deno.sidebars.symbols.commands.find",
-    wrapCommand(findSymbol),
-  );
-
-  async function findSymbol() {
-    if (!symbolDataProvider) {
-      symbolDataProvider = new SymbolDataProvider();
-    }
-
-    if (
-      // @ts-expect-error: The Nova types are outdated.
-      !(nova.workspace.context as Configuration).get("shouldDisplayFeatures")
-    ) {
-      const failureNotificationReq = new NotificationRequest(
-        "co.gwil.deno.notifications.findSymbolUnavailable",
-      );
-      failureNotificationReq.title = "Find Symbol is unavailable.";
-      failureNotificationReq.body =
-        "Open a TypeScript, JavaScript, JSX or TSX file.";
-      nova.notifications.add(failureNotificationReq);
-      return;
-    }
-
-    const query = await new Promise((resolve) =>
-      nova.workspace.showInputPalette(
-        "Type the name of a variable, class or function.",
-        {},
-        resolve,
-      )
-    ) as string | null | undefined;
-
-    // This happens if the user exits the palette, for example, by pressing Escape.
-    if (!query) return;
-
-    symbolDataProvider.displaySymbols(query, getSymbols);
-
-    async function getSymbols(query: string) {
-      const params = { query };
-      const response = await client.sendRequest(
-        "workspace/symbol",
-        params,
-      ) as lsp.SymbolInformation[] | null;
-      return response;
-    }
   }
 }
