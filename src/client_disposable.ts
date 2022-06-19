@@ -10,8 +10,7 @@ import {
 import registerFormatDocument from "./commands/format_document.ts";
 import registerCache from "./commands/cache.ts";
 import registerRenameSymbol from "./commands/rename_symbol.ts";
-import registerPaletteFindSymbol from "./commands/palette_find_symbol.ts";
-import registerSymbolSidebarFindSymbol from "./commands/sidebar_find_symbol.ts";
+import registerFindSymbol from "./find_symbol/register.ts";
 import syntaxes from "./syntaxes.ts";
 
 const FORMAT_ON_SAVE_CONFIG_KEY = "co.gwil.deno.config.formatOnSave";
@@ -140,11 +139,7 @@ export async function makeClientDisposable(
     clientDisposable.add(registerFormatDocument(client));
     clientDisposable.add(registerCache(client));
     clientDisposable.add(registerRenameSymbol(client));
-
-    // palette Find Symbol command
-    clientDisposable.add(registerPaletteFindSymbol());
-    // sidebar Find Symbol command
-    clientDisposable.add(registerSymbolSidebarFindSymbol(client));
+    clientDisposable.add(registerFindSymbol(client));
 
     nova.workspace.onDidAddTextEditor((editor) => {
       const editorDisposable = new CompositeDisposable();
