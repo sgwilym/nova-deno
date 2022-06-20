@@ -1,26 +1,17 @@
 import {
-  Configuration,
   Disposable,
-  LanguageClient,
   lspRangeToRange,
-  NotificationRequest,
   nova,
   TreeDataProvider,
   TreeItem,
   TreeItemCollapsibleState,
   TreeView,
-  wrapCommand,
 } from "../nova_utils.ts";
 import { lsp } from "../../deps.ts";
-let symbolDataProvider: SymbolDataProvider | null = null;
+import { Element, Header } from "../sidebars.ts";
 
 function getFilename(uri: string) {
   return decodeURIComponent(uri).split("/").pop()!;
-}
-
-interface Element {
-  toTreeItem: () => TreeItem;
-  children: Element[];
 }
 class File implements Element {
   uri: string;
@@ -48,19 +39,6 @@ class File implements Element {
 
     item.image = "__filetype." + this.extension;
     item.collapsibleState = TreeItemCollapsibleState.Expanded;
-    return item;
-  }
-}
-class Header implements Element {
-  content: string;
-  children: [];
-  constructor(content: string) {
-    this.content = content;
-    this.children = [];
-  }
-
-  toTreeItem() {
-    const item = new TreeItem(this.content);
     return item;
   }
 }
