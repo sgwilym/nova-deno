@@ -2,7 +2,6 @@ import {
   Color,
   ColorComponents,
   ColorFormat, // It is, actually, read. I think this message is due to a @ts-expect-error.
-  getOverridableBoolean,
   nova,
   Process,
   TreeDataProvider,
@@ -46,7 +45,6 @@ class Test implements Element {
       this.passed ? passedColorComponents : failedColorComponents,
     );
     item.descriptiveText = this.passed ? "Passed" : "Failed";
-    item.contextValue = "test";
 
     return item;
   }
@@ -83,8 +81,6 @@ export class TestFile implements Element {
       : TreeItemCollapsibleState.None;
     item.contextValue = "file";
     item.identifier = this.path;
-    item.command = "co.gwil.deno.sidebars.tests.commands.open";
-
     return item;
   }
 }
@@ -165,26 +161,15 @@ export default class TestsDataProvider implements TreeDataProvider<Element> {
     // The above process is carried out instead of replacing the `this.files` property. I prefer this because it does not remove test results from the sidebar.
   }
 
-  runTests(tests?: string[]) {
+  runTests() {
     if (!nova.workspace.path) {
       throw new Error("This function requires a workspace path.");
     }
 
-    const paths = tests ?? this.files.map((file) => file.path);
-    const args = ["test", "-A"];
-    if (getOverridableBoolean("co.gwil.deno.config.enableUnstable")) {
-      args.push("--unstable");
-    }
-
-    const potentialImportMapLocation = nova.workspace.config.get(
-      "co.gwil.deno.config.import-map",
-    );
-    if (potentialImportMapLocation) {
-      args.push("--import-map=" + potentialImportMapLocation);
-    }
+    const paths = this.files.map((file) => file.path);
 
     const options = {
-      args: ["deno", ...args, ...paths],
+      args: ["deno", "test", "-A", ...paths],
       cwd: nova.workspace.path,
     };
     const denoProcess = new Process("/usr/bin/env", options);
@@ -242,10 +227,10 @@ export default class TestsDataProvider implements TreeDataProvider<Element> {
     const onExit = new Promise((resolve, reject) => {
       denoProcess.onDidExit(() => {
         // TODO: explore the dangers regarding tests that take long to execute
+        this.files = output;
         if (loggingError) {
           reject(loggingError);
         } else {
-          this.files = output;
           resolve(output);
         }
       });

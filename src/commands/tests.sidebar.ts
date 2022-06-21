@@ -1,4 +1,5 @@
 import {
+  FileTextMode,
   NotificationRequest,
   nova,
   Process,
@@ -56,6 +57,69 @@ export function registerRunAll(testsDataProvider: TestsDataProvider) {
   );
 
   async function runAll() {
+    const hiddenWorkspaceDataPath = nova.path.join(
+      nova.extension.workspaceStoragePath,
+      "state.json",
+    );
+
+    console.log(hiddenWorkspaceDataPath);
+
+    function warningWasShown(path: string): boolean {
+      try {
+        const file = nova.fs.open(path) as FileTextMode;
+        const data = JSON.parse(file.readlines().join("\n"));
+        file.close();
+        return data.warningWasShown;
+      } catch {
+        // I hope it's OK to create so many `File` objects.
+        try {
+          nova.fs.mkdir(nova.extension.workspaceStoragePath);
+        } catch (e) {
+          throw new Error(
+            "Could not access the extension's workspace storage path.",
+            { cause: e },
+          );
+        }
+        nova.fs.open(path, "x").close();
+        console.log("hi");
+        const file = nova.fs.open(path, "w");
+        console.log("hii");
+        file.write(JSON.stringify({ warningWasShown: false }));
+        console.log("hiii");
+        file.close();
+        return warningWasShown(path);
+      }
+    }
+
+    if (!warningWasShown(hiddenWorkspaceDataPath)) {
+      const permissionsNotificationRequest = new NotificationRequest(
+        "co.gwil.deno.notifications.findSymbolUnavailable",
+      );
+      permissionsNotificationRequest.title =
+        "Tests are awarded all permissions.";
+      permissionsNotificationRequest.body =
+        "Test files may access environment variables, load dynamic libraries, measure time in high resolution, utilize the network, read files and write files. This is not configurable at the moment.";
+      permissionsNotificationRequest.actions = ["Cancel", "Allow"];
+
+      const response = await nova.notifications.add(
+        permissionsNotificationRequest,
+      );
+      if (response.actionIdx == 0) {
+        return;
+      }
+
+      const oldFile = nova.fs.open(hiddenWorkspaceDataPath) as FileTextMode;
+      const data = JSON.parse(oldFile.readlines().join("\n"));
+      console.log(JSON.stringify(data));
+      oldFile.close();
+      nova.fs.remove(hiddenWorkspaceDataPath);
+      nova.fs.open(hiddenWorkspaceDataPath, "x").close();
+      const file = nova.fs.open(hiddenWorkspaceDataPath, "w");
+      data.warningWasShown = true;
+      file.write(JSON.stringify(data));
+      file.close();
+    }
+
     try {
       await testsDataProvider.runTests();
       testsDataProvider.treeView.reload();
