@@ -2,6 +2,8 @@ import {
   Color,
   ColorComponents,
   ColorFormat, // It is, actually, read. I think this message is due to a @ts-expect-error.
+  getOverridableBoolean,
+  NotificationRequest,
   nova,
   Process,
   TreeDataProvider,
@@ -45,6 +47,7 @@ class Test implements Element {
       this.passed ? passedColorComponents : failedColorComponents,
     );
     item.descriptiveText = this.passed ? "Passed" : "Failed";
+    item.contextValue = "test";
 
     return item;
   }
@@ -81,6 +84,8 @@ export class TestFile implements Element {
       : TreeItemCollapsibleState.None;
     item.contextValue = "file";
     item.identifier = this.path;
+    item.command = "co.gwil.deno.sidebars.tests.commands.open";
+
     return item;
   }
 }
@@ -161,15 +166,26 @@ export default class TestsDataProvider implements TreeDataProvider<Element> {
     // The above process is carried out instead of replacing the `this.files` property. I prefer this because it does not remove test results from the sidebar.
   }
 
-  runTests() {
+  runTests(tests?: string[]) {
     if (!nova.workspace.path) {
       throw new Error("This function requires a workspace path.");
     }
 
-    const paths = this.files.map((file) => file.path);
+    const paths = tests ?? this.files.map((file) => file.path);
+    const args = ["test", "-A"];
+
+    if (getOverridableBoolean("co.gwil.deno.config.enableUnstable")) {
+      args.push("--unstable");
+    }
+    const potentialImportMapLocation = nova.workspace.config.get(
+      "co.gwil.deno.config.import-map",
+    );
+    if (potentialImportMapLocation) {
+      args.push("--import-map=" + potentialImportMapLocation);
+    }
 
     const options = {
-      args: ["deno", "test", "-A", ...paths],
+      args: ["deno", ...args, ...paths],
       cwd: nova.workspace.path,
     };
     const denoProcess = new Process("/usr/bin/env", options);
@@ -184,10 +200,14 @@ export default class TestsDataProvider implements TreeDataProvider<Element> {
     const output: TestFile[] = [];
 
     let loggingError: UnexpectedLogError | null = null;
-    denoProcess.onStdout((line) => {
+    denoProcess.onStderr((line) => {
       // remove newline
       line = line.slice(0, -1);
       console.log(line);
+    });
+    denoProcess.onStdout((line) => {
+      line = line.slice(0, -1);
+
       // remove control (?) characters that make output colorful
       line = line.replace(
         CONTROL_REGEXP,
@@ -224,13 +244,44 @@ export default class TestsDataProvider implements TreeDataProvider<Element> {
       }
     });
 
-    const onExit = new Promise((resolve, reject) => {
+    const onExit = new Promise<TestFile[]>((resolve, reject) => {
       denoProcess.onDidExit(() => {
         // TODO: explore the dangers regarding tests that take long to execute
-        this.files = output;
         if (loggingError) {
           reject(loggingError);
         } else {
+          for (const file of output) {
+            const analogousIndex = this.files.findIndex(
+              (oldFile) => oldFile.path == file.path,
+            );
+            if (analogousIndex != -1) {
+              this.files[analogousIndex] = file;
+            } else {
+              this.files.push(file);
+            }
+          }
+
+          const paths = output.map((file) => file.path);
+          const missingFiles = this.files.filter(
+            (file) => !paths.includes(file.path),
+          );
+          for (
+            const file of missingFiles
+          ) {
+            file.children = [new Header("Failed to run")];
+          }
+
+          if (missingFiles.length) {
+            const configurationErrorNotificationRequest =
+              new NotificationRequest(
+                "co.gwil.deno.notifications.unexpectedEmptiness",
+              );
+            configurationErrorNotificationRequest.title = "Expecting more?";
+            configurationErrorNotificationRequest.body =
+              "Deno may be failing to run some tests. Check the extension console for logging.";
+            nova.notifications.add(configurationErrorNotificationRequest);
+          }
+
           resolve(output);
         }
       });
