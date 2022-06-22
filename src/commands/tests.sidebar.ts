@@ -3,9 +3,6 @@ import {
   NotificationRequest,
   nova,
   Process,
-  TextEditor,
-  Transferrable,
-  Workspace,
   wrapCommand,
 } from "../nova_utils.ts";
 import TestsDataProvider, {
@@ -62,8 +59,6 @@ export function registerRunAll(testsDataProvider: TestsDataProvider) {
       "state.json",
     );
 
-    console.log(hiddenWorkspaceDataPath);
-
     function warningWasShown(path: string): boolean {
       try {
         const file = nova.fs.open(path) as FileTextMode;
@@ -81,11 +76,8 @@ export function registerRunAll(testsDataProvider: TestsDataProvider) {
           );
         }
         nova.fs.open(path, "x").close();
-        console.log("hi");
         const file = nova.fs.open(path, "w");
-        console.log("hii");
         file.write(JSON.stringify({ warningWasShown: false }));
-        console.log("hiii");
         file.close();
         return warningWasShown(path);
       }
@@ -110,7 +102,6 @@ export function registerRunAll(testsDataProvider: TestsDataProvider) {
 
       const oldFile = nova.fs.open(hiddenWorkspaceDataPath) as FileTextMode;
       const data = JSON.parse(oldFile.readlines().join("\n"));
-      console.log(JSON.stringify(data));
       oldFile.close();
       nova.fs.remove(hiddenWorkspaceDataPath);
       nova.fs.open(hiddenWorkspaceDataPath, "x").close();
@@ -119,6 +110,16 @@ export function registerRunAll(testsDataProvider: TestsDataProvider) {
       file.write(JSON.stringify(data));
       file.close();
     }
+
+    const timeoutID = setTimeout(() => {
+      const stillRunningNotificationRequest = new NotificationRequest(
+        "co.gwil.deno.notifications.runningTests",
+      );
+      stillRunningNotificationRequest.title = "The tests are still being run.";
+      stillRunningNotificationRequest.body =
+        "It's just taking a while. Please wait.";
+      nova.notifications.add(stillRunningNotificationRequest);
+    }, 3 * 1000);
 
     try {
       await testsDataProvider.runTests();
@@ -139,6 +140,8 @@ export function registerRunAll(testsDataProvider: TestsDataProvider) {
         // shown as a Nova message regardless; doesn't produce a crash
         throw e;
       }
+    } finally {
+      clearTimeout(timeoutID);
     }
   }
 }

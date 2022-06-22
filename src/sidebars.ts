@@ -3,6 +3,9 @@ import { TreeItem } from "./nova_utils.ts";
 export interface Element {
   toTreeItem: () => TreeItem;
   children: Element[];
+  path?: string;
+  uri?: string;
+  shouldDisambiguate?: boolean;
 }
 
 export class Header implements Element {
