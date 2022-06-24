@@ -16,13 +16,16 @@ export function registerTestsSidebar() {
 
   // It seems that Nova won't accept a more narrow glob, like the one in the Deno documentation.
   // https://deno.land/manual/testing#running-tests
-  const GLOB = "*test.*";
-  testsDisposable.add(
-    nova.fs.watch(GLOB, () => {
-      dataProvider.updateFiles(nova.workspace.path!);
-      dataProvider.treeView.reload();
-    }),
-  );
+  console.log(4);
+  if (nova.workspace.path) {
+    const GLOB = "*test.*";
+    testsDisposable.add(
+      nova.fs.watch(GLOB, () => {
+        dataProvider.updateFiles(nova.workspace.path!);
+        dataProvider.treeView.reload();
+      }),
+    );
+  }
 
   testsDisposable.add(registerLearnMore());
   testsDisposable.add(registerRefresh(dataProvider));
