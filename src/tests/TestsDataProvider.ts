@@ -296,7 +296,7 @@ export default class TestsDataProvider implements TreeDataProvider<Element> {
       if (nova.workspace.path) {
         return this.files;
       } else {
-        return [new Header("Open a Deno project to see test results.")];
+        return [];
       }
     }
     return element.children;
