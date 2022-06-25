@@ -60,14 +60,22 @@ export function registerRunAll(testsDataProvider: TestsDataProvider) {
       "state.json",
     );
 
-    function warningWasShown(path: string): boolean {
+    function readState(path: string): Record<string, unknown> {
       try {
         const file = nova.fs.open(path) as FileTextMode;
-        const data = JSON.parse(file.readlines().join("\n"));
+        const content = file.readlines().join("\n");
         file.close();
-        return data.warningWasShown;
+
+        return JSON.parse(content);
       } catch {
-        // I hope it's OK to create so many `File` objects.
+        return {};
+      }
+    }
+    function writeState(path: string, content: Record<string, unknown>) {
+      let file;
+      try {
+        file = nova.fs.open(path, "w") as FileTextMode;
+      } catch {
         try {
           nova.fs.mkdir(nova.extension.workspaceStoragePath);
         } catch (e) {
@@ -76,15 +84,13 @@ export function registerRunAll(testsDataProvider: TestsDataProvider) {
             { cause: e },
           );
         }
-        nova.fs.open(path, "x").close();
-        const file = nova.fs.open(path, "w");
-        file.write(JSON.stringify({ warningWasShown: false }));
-        file.close();
-        return warningWasShown(path);
+        file = nova.fs.open(path, "w") as FileTextMode;
       }
+      file.write(JSON.stringify(content));
     }
 
-    if (!warningWasShown(hiddenWorkspaceDataPath)) {
+    const state = readState(hiddenWorkspaceDataPath);
+    if (!state.warningWasShown) {
       const permissionsNotificationRequest = new NotificationRequest(
         "co.gwil.deno.notifications.findSymbolUnavailable",
       );
@@ -101,15 +107,8 @@ export function registerRunAll(testsDataProvider: TestsDataProvider) {
         return;
       }
 
-      const oldFile = nova.fs.open(hiddenWorkspaceDataPath) as FileTextMode;
-      const data = JSON.parse(oldFile.readlines().join("\n"));
-      oldFile.close();
-      nova.fs.remove(hiddenWorkspaceDataPath);
-      nova.fs.open(hiddenWorkspaceDataPath, "x").close();
-      const file = nova.fs.open(hiddenWorkspaceDataPath, "w");
-      data.warningWasShown = true;
-      file.write(JSON.stringify(data));
-      file.close();
+      state.warningWasShown = true;
+      writeState(hiddenWorkspaceDataPath, state);
     }
 
     const timeoutID = setTimeout(() => {
