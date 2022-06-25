@@ -276,7 +276,7 @@ export default class TestsDataProvider implements TreeDataProvider<Element> {
               new NotificationRequest(
                 "co.gwil.deno.notifications.unexpectedEmptiness",
               );
-            configurationErrorNotificationRequest.title = "Expecting more?";
+            configurationErrorNotificationRequest.title = "Check the console.";
             configurationErrorNotificationRequest.body =
               "Deno may be failing to run some tests. Check the extension console for logging.";
             nova.notifications.add(configurationErrorNotificationRequest);
