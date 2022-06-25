@@ -6,6 +6,7 @@ import {
   wrapCommand,
 } from "../nova_utils.ts";
 import TestsDataProvider, {
+  TestFile,
   UnexpectedLogError,
 } from "../tests/TestsDataProvider.ts";
 
@@ -152,8 +153,11 @@ export function registerRun(testsDataProvider: TestsDataProvider) {
     wrapCommand(run),
   );
 
-  function run() {
-    testsDataProvider.runTests();
+  async function run() {
+    // This command is only available when `TestFile`s, exclusively, are selected.
+    const selected = testsDataProvider.treeView.selection as TestFile[];
+    await testsDataProvider.runTests(selected.map((file) => file.path));
+    testsDataProvider.treeView.reload();
   }
 }
 
