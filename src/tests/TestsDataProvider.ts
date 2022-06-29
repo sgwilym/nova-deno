@@ -171,7 +171,6 @@ export default class TestsDataProvider implements TreeDataProvider<Element> {
       throw new Error("This function requires a workspace path.");
     }
 
-    const ranAll = !tests;
     const paths = tests ?? this.files.map((file) => file.path);
     const args = ["test", "-A"];
 
@@ -261,28 +260,26 @@ export default class TestsDataProvider implements TreeDataProvider<Element> {
             }
           }
 
-          if (ranAll) {
-            const paths = output.map((file) => file.path);
-            const missingFiles = this.files.filter(
-              (file) => !paths.includes(file.path),
-            );
-            for (
-              const file of missingFiles
-            ) {
-              file.children = [new Header("Failed to run")];
-            }
+          const newPaths = output.map((file) => file.path);
+          const missingFiles = this.files.filter(
+            (file) =>
+              paths.includes(file.path) && !newPaths.includes(file.path),
+          );
+          for (
+            const file of missingFiles
+          ) {
+            file.children = [new Header("Failed to run")];
+          }
 
-            if (missingFiles.length) {
-              const configurationErrorNotificationRequest =
-                new NotificationRequest(
-                  "co.gwil.deno.notifications.unexpectedEmptiness",
-                );
-              configurationErrorNotificationRequest.title =
-                "Check the console.";
-              configurationErrorNotificationRequest.body =
-                "Deno may be failing to run some tests. Check the extension console for logging.";
-              nova.notifications.add(configurationErrorNotificationRequest);
-            }
+          if (missingFiles.length) {
+            const configurationErrorNotificationRequest =
+              new NotificationRequest(
+                "co.gwil.deno.notifications.unexpectedEmptiness",
+              );
+            configurationErrorNotificationRequest.title = "Check the console.";
+            configurationErrorNotificationRequest.body =
+              "Deno may be failing to run some tests. Check the extension console for logging.";
+            nova.notifications.add(configurationErrorNotificationRequest);
           }
 
           resolve(output);
