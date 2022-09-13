@@ -6,11 +6,15 @@ import {
   TextEditor,
 } from "./nova_utils.ts";
 import {
+  configFilenames,
   registerBundleTask,
   registerDenoTasks,
   registerRunTask,
 } from "./tasks.ts";
-import { makeClientDisposable } from "./client_disposable.ts";
+import {
+  CanNotEnsureError,
+  makeClientDisposable,
+} from "./client_disposable.ts";
 
 const compositeDisposable = new CompositeDisposable();
 const taskDisposable = new CompositeDisposable();
@@ -31,26 +35,28 @@ const workspaceConfigRestartKeys = [
 ];
 
 export async function activate() {
-  const workspacePath = nova.workspace.path;
-  if (workspacePath) {
-    watchConfigFile(workspacePath, "deno.json");
-    watchConfigFile(workspacePath, "deno.jsonc");
-  }
-
   let clientDisposable;
   try {
     clientDisposable = await makeClientDisposable(compositeDisposable);
-  } catch {
-    // This happens if the user clicks on 'Ignore' after they are requested to install Deno.
-    return;
+  } catch (e) {
+    if (e instanceof CanNotEnsureError) {
+      // This happens if the user clicks on 'Ignore' after they are requested to install Deno.
+      return;
+    }
+    throw e;
   }
-
   compositeDisposable.add(clientDisposable);
 
   compositeDisposable.add(registerDenoTasks());
   compositeDisposable.add(registerRunTask());
   compositeDisposable.add(registerBundleTask());
+
   compositeDisposable.add(registerEditorWatcher());
+
+  const configFileWatchingDisposables = watchConfigFiles(
+    nova.workspace.path,
+    configFilenames,
+  );
 
   const configRestartDisposables = restartServerOnConfigChanges(
     configRestartKeys,
@@ -60,27 +66,51 @@ export async function activate() {
     workspaceConfigRestartKeys,
   );
 
-  [...configRestartDisposables, ...workspaceRestartDisposables].forEach(
+  [
+    ...configFileWatchingDisposables,
+    ...configRestartDisposables,
+    ...workspaceRestartDisposables,
+  ].forEach(
     (disposable) => {
       compositeDisposable.add(disposable);
     },
   );
 
   nova.subscriptions.add(compositeDisposable);
+  nova.subscriptions.add(taskDisposable);
 }
 
 export function deactivate() {
   compositeDisposable.dispose();
 }
 
-function watchConfigFile(workspacePath: string, filename: string) {
-  const denoConfigPath = nova.path.join(workspacePath, filename);
-  const configWatcher = nova.fs.watch(denoConfigPath, () => {
-    taskDisposable.dispose();
-    taskDisposable.add(registerDenoTasks());
-    nova.commands.invoke("co.gwil.deno.commands.restartServer");
+function watchConfigFiles(workspacePath: string | null, filenames: string[]) {
+  if (!workspacePath) return [];
+
+  return filenames.map((filename) => {
+    const denoConfigPath = nova.path.join(workspacePath, filename);
+    return nova.fs.watch(denoConfigPath, () => {
+      taskDisposable.dispose();
+      taskDisposable.add(registerDenoTasks());
+      nova.commands.invoke("co.gwil.deno.commands.restartServer");
+    });
   });
-  compositeDisposable.add(configWatcher);
+}
+
+function restartServerOnConfigChanges(keys: string[]) {
+  return keys.map((key) => {
+    return nova.config.onDidChange(key, () => {
+      nova.commands.invoke("co.gwil.deno.commands.restartServer");
+    });
+  });
+}
+
+function restartServerOnWorkspaceConfigChanges(keys: string[]) {
+  return keys.map((key) => {
+    return nova.workspace.config.onDidChange(key, () => {
+      nova.commands.invoke("co.gwil.deno.commands.restartServer");
+    });
+  });
 }
 
 /**
@@ -100,19 +130,11 @@ function registerEditorWatcher() {
       syntaxes.includes(syntax)
     );
 
-    if (isCompatible) {
-      // @ts-expect-error: The Nova types are outdated. This feature was added in version 5.
-      (nova.workspace.context as Configuration).set(
-        "shouldDisplayFeatures",
-        true,
-      );
-    } else {
-      // @ts-expect-error: for the reason above
-      (nova.workspace.context as Configuration).set(
-        "shouldDisplayFeatures",
-        false,
-      );
-    }
+    // @ts-expect-error: The Nova types are outdated. This feature was added in version 5.
+    (nova.workspace.context as Configuration).set(
+      "shouldDisplayFeatures",
+      isCompatible,
+    );
   }
 
   disposable.add(
@@ -124,40 +146,24 @@ function registerEditorWatcher() {
       }));
 
       disposable.add(editor.onDidDestroy((deletedEditor) => {
-        const editors: (TextEditor | null)[] = [...nova.workspace.textEditors];
+        // TODO: remember what this copy is for
+        const editors = [...nova.workspace.textEditors];
 
         // remove one editor whose URI is the same as this editor's
-        const index = (editors as TextEditor[]).findIndex((editor) =>
-          editor.document.uri == deletedEditor.document.uri
+        const index = (editors as TextEditor[]).findIndex(
+          (editor) => editor.document.uri === deletedEditor.document.uri,
         );
-        editors[index] = null;
-        const remainingEditors = editors.filter((editor) =>
-          editor !== null
-        ) as TextEditor[];
-        const remainingDocuments = remainingEditors.map((editor) =>
-          editor.document
+        const remainingEditors = editors.filter(
+          (_editor, editorIndex) => editorIndex !== index,
         );
 
+        const remainingDocuments = remainingEditors.map(
+          (editor) => editor.document,
+        );
         checkFeatureAvailability(remainingDocuments);
       }));
     }),
   );
 
   return disposable;
-}
-
-function restartServerOnConfigChanges(keys: string[]) {
-  return keys.map((key) => {
-    return nova.config.onDidChange(key, () => {
-      nova.commands.invoke("co.gwil.deno.commands.restartServer");
-    });
-  });
-}
-
-function restartServerOnWorkspaceConfigChanges(keys: string[]) {
-  return keys.map((key) => {
-    return nova.workspace.config.onDidChange(key, () => {
-      nova.commands.invoke("co.gwil.deno.commands.restartServer");
-    });
-  });
 }
