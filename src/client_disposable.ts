@@ -121,7 +121,7 @@ export async function makeClientDisposable(
       initializationOptions: {
         enable: getOverridableBoolean("co.gwil.deno.config.enableLsp"),
         // FIXME: I don't know if there's a need to handle the config value being null.
-        enablePaths: nova.workspace.config.get(ENABLED_PATHS_CONFIG_KEY),
+        enablePaths: nova.workspace.config.get(ENABLED_PATHS_CONFIG_KEY) || [],
         lint: getOverridableBoolean("co.gwil.deno.config.enableLinting"),
         unstable: getOverridableBoolean("co.gwil.deno.config.enableUnstable"),
         importMap: nova.workspace.config.get("co.gwil.deno.config.import-map"),
@@ -135,6 +135,12 @@ export async function makeClientDisposable(
             hosts: getHostsMap(),
           },
         },
+        documentPreloadLimit: nova.workspace.config.get(
+          "co.gwil.deno.config.documentPreloadLimit",
+        ) || undefined,
+        maxTsServerMemory: nova.workspace.config.get(
+          "co.gwil.deno.config.maxTsServerMemory",
+        ) || undefined,
       },
     },
   );

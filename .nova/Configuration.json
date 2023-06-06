@@ -2,7 +2,7 @@
   "apexskier.typescript.config.userPreferences.disableSuggestions" : false,
   "co.gwil.deno.config.enableLinting" : "true",
   "co.gwil.deno.config.enableLsp" : "true",
-  "co.gwil.deno.config.enableUnstable" : "true",
+  "co.gwil.deno.config.enableUnstable" : "false",
   "co.gwil.deno.config.formatOnSave" : "true",
   "co.gwil.deno.enable" : true,
   "deno.enable" : true,

@@ -78,6 +78,27 @@
           "type": "stringArray"
         }
       ]
+    },
+    {
+      "title": "Performance settings",
+      "type": "section",
+      "description": "Advanced settings which may improve the performance of Deno's LSP server.",
+      "children": [
+        {
+          "key": "co.gwil.deno.config.documentPreloadLimit",
+          "title": "Document preload limit",
+          "type": "number",
+          "description": "The number of file system entries to for the LSP to preload.",
+          "min": 0
+        },
+        {
+          "key": "co.gwil.deno.config.maxTsServerMemory",
+          "title": "TypeScript isolate memory limit",
+          "type": "number",
+          "description": "The maximum amount of memory the language server's internal TypeScript isolate is permitted to occupy.",
+          "min": 0
+        }
+      ]
     }
   ],
 

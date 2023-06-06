@@ -33,6 +33,8 @@ const workspaceConfigRestartKeys = [
   "co.gwil.deno.config.enableLinting",
   "co.gwil.deno.config.enableUnstable",
   "co.gwil.deno.config.import-map",
+  "co.gwil.deno.config.documentPreloadLimit",
+  "co.gwil.deno.config.maxTsServerMemory",
 ];
 
 export async function activate() {
