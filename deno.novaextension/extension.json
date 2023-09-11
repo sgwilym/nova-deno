@@ -29,9 +29,7 @@
     "onLanguage:typescript",
     "onLanguage:tsx",
     "onLanguage:javascript",
-    "onLanguage:jsx",
-    "onWorkspaceContains:deno.json",
-    "onWorkspaceContains:deno.jsonc"
+    "onLanguage:jsx"
   ],
 
   "config": [
@@ -57,27 +55,10 @@
       "default": true
     },
     {
-      "key": "co.gwil.deno.config.enableUnstable",
+      "key": "deno.config.enableUnstable",
       "title": "Support unstable Deno APIs",
       "type": "boolean",
       "default": false
-    },
-    {
-      "title": "Import suggestions",
-      "type": "section",
-      "description": "Deno is able to provide completions for URL imports. Because remote servers could provide false suggestions in an attempty to get you to run untrusted code, you must explicitly indicate trust for each registry. Putting the same registry in both of these sections will lead to unexpected results!",
-      "children": [
-        {
-          "key": "co.gwil.deno.config.trustedImportHosts",
-          "title": "Trusted hosts",
-          "type": "stringArray"
-        },
-        {
-          "key": "co.gwil.deno.config.untrustedImportHosts",
-          "title": "Untrusted hosts",
-          "type": "stringArray"
-        }
-      ]
     }
   ],
 
@@ -98,19 +79,15 @@
       "key": "co.gwil.deno.config.enableLsp",
       "title": "Enable Deno Language features",
       "description": "Turn Deno integration on. If you have the TypeScript extension installed, you'll need to disable it.",
-      "type": "enum",
-      "values": [
-        ["null", "Inherit from Global Settings"],
-        ["false", "Disable"],
-        ["true", "Enable"]
-      ],
-      "default": "null"
+      "type": "boolean"
     },
     {
-      "key": "co.gwil.deno.config.enabledPaths",
+      "key": "deno.enablePaths",
       "title": "Enabled paths",
       "description": "Choose paths in which to enable Deno integration. For features to be enabled invariably, leave this blank.",
-      "type": "pathArray"
+      "type": "pathArray",
+      "allowFolders": true,
+      "relative": true
     },
     {
       "key": "co.gwil.deno.config.enableLinting",
@@ -141,6 +118,44 @@
       "link": "https://deno.land/manual/linking_to_external_code/import_maps",
       "description": "Load import map file from local file or remote URL. Automatically detected in the deno.json as of Deno 1.20.",
       "type": "string"
+    },
+    {
+      "title": "Import suggestions",
+      "type": "section",
+      "description": "Deno is able to provide completions for URL imports. Because remote servers could provide false suggestions in an attempty to get you to run untrusted code, you must explicitly indicate trust for each registry. Putting the same registry in both of these sections will lead to unexpected results!",
+      "children": [
+        {
+          "key": "co.gwil.deno.config.trustedImportHosts",
+          "title": "Trusted hosts",
+          "type": "stringArray"
+        },
+        {
+          "key": "co.gwil.deno.config.untrustedImportHosts",
+          "title": "Untrusted hosts",
+          "type": "stringArray"
+        }
+      ]
+    },
+    {
+      "title": "Performance settings",
+      "type": "section",
+      "description": "Advanced settings which may improve the performance of Deno's LSP server.",
+      "children": [
+        {
+          "key": "co.gwil.deno.config.documentPreloadLimit",
+          "title": "Document preload limit",
+          "type": "number",
+          "description": "The number of file system entries to for the LSP to preload.",
+          "min": 0
+        },
+        {
+          "key": "co.gwil.deno.config.maxTsServerMemory",
+          "title": "TypeScript isolate memory limit",
+          "type": "number",
+          "description": "The maximum amount of memory the language server's internal TypeScript isolate is permitted to occupy.",
+          "min": 0
+        }
+      ]
     }
   ],
 

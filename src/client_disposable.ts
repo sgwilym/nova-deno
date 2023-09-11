@@ -17,7 +17,7 @@ import syntaxes from "./syntaxes.ts";
 const FORMAT_ON_SAVE_CONFIG_KEY = "co.gwil.deno.config.formatOnSave";
 const TRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.trustedImportHosts";
 const UNTRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.untrustedImportHosts";
-const ENABLED_PATHS_CONFIG_KEY = "co.gwil.deno.config.enabledPaths";
+const ENABLED_PATHS_CONFIG_KEY = "deno.enablePaths";
 
 // Deno expects a map of hosts for its autosuggestion feature, where each key is a URL and its value a bool representing whether it is trusted or not. Nova does not have a Configurable like this, so we'll have to assemble one out of two arrays.
 
@@ -120,8 +120,7 @@ export async function makeClientDisposable(
       syntaxes,
       initializationOptions: {
         enable: getOverridableBoolean("co.gwil.deno.config.enableLsp"),
-        // FIXME: I don't know if there's a need to handle the config value being null.
-        enablePaths: nova.workspace.config.get(ENABLED_PATHS_CONFIG_KEY),
+        enablePaths: nova.workspace.config.get(ENABLED_PATHS_CONFIG_KEY) || [],
         lint: getOverridableBoolean("co.gwil.deno.config.enableLinting"),
         unstable: getOverridableBoolean("co.gwil.deno.config.enableUnstable"),
         importMap: nova.workspace.config.get("co.gwil.deno.config.import-map"),
@@ -135,6 +134,12 @@ export async function makeClientDisposable(
             hosts: getHostsMap(),
           },
         },
+        documentPreloadLimit: nova.workspace.config.get(
+          "co.gwil.deno.config.documentPreloadLimit",
+        ) || undefined,
+        maxTsServerMemory: nova.workspace.config.get(
+          "co.gwil.deno.config.maxTsServerMemory",
+        ) || undefined,
       },
     },
   );
