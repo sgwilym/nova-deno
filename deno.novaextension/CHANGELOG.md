@@ -1,8 +1,18 @@
+## v1.2.0
+
+Added some features to improve the performance of this extension with large
+codebases.
+
+- Added per-workspace `enablePath` settings, which enables Deno's LSP to work
+  with only paths you specify.
+- Added a per-workspace 'Document preload limit' configuration.
+- Added a per-workspace 'TypeScript isolate memory limit' configuration.
+
 ## v1.1.0
 
 - **Symbols**: This update adds a new 'Find Symbol' command and accompanying
   Deno Symbols sidebar to show the results of your search. (thanks to
-  [belcar-s](https://github.com/belcar-s)!)m
+  [belcar-s](https://github.com/belcar-s)!)
 - The extension will now gracefully handle Deno not being installed
   ([belcar-s](https://github.com/belcar-s)
 
