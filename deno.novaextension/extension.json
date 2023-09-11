@@ -30,8 +30,6 @@
     "onLanguage:tsx",
     "onLanguage:javascript",
     "onLanguage:jsx",
-    "onWorkspaceContains:deno.json",
-    "onWorkspaceContains:deno.jsonc"
   ],
 
   "config": [
@@ -57,7 +55,7 @@
       "default": true
     },
     {
-      "key": "co.gwil.deno.config.enableUnstable",
+      "key": "deno.config.enableUnstable",
       "title": "Support unstable Deno APIs",
       "type": "boolean",
       "default": false
@@ -128,10 +126,12 @@
       "default": "null"
     },
     {
-      "key": "co.gwil.deno.config.enabledPaths",
+      "key": "deno.enablePaths",
       "title": "Enabled paths",
       "description": "Choose paths in which to enable Deno integration. For features to be enabled invariably, leave this blank.",
-      "type": "pathArray"
+      "type": "pathArray",
+      "allowFolders": true,
+      "relative": true
     },
     {
       "key": "co.gwil.deno.config.enableLinting",
