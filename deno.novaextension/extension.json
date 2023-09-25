@@ -84,7 +84,15 @@
     {
       "key": "deno.enablePaths",
       "title": "Enabled paths",
-      "description": "Choose paths in which to enable Deno integration. For features to be enabled invariably, leave this blank.",
+      "description": "Enable extension functionality for the specified paths.",
+      "type": "pathArray",
+      "allowFolders": true,
+      "relative": true
+    },
+    {
+      "key": "deno.disablePaths",
+      "title": "Disabled paths",
+      "description": "Disable extension functionality for the specified paths.",
       "type": "pathArray",
       "allowFolders": true,
       "relative": true

@@ -1,4 +1,7 @@
 {
+  "deno.disablePaths" : [
+
+  ],
   "deno.enablePaths" : [
     "src"
   ],
