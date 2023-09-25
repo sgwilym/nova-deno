@@ -22,17 +22,15 @@ const taskDisposable = new CompositeDisposable();
 const configRestartKeys = [
   "co.gwil.deno.config.enableLsp",
   "co.gwil.deno.config.enableLinting",
-  "co.gwil.deno.config.enableUnstable",
-  "co.gwil.deno.config.trustedImportHosts",
-  "co.gwil.deno.config.untrustedImportHosts",
+  "co.gwil.deno.config.completeFunctionCalls",
 ];
 
 const workspaceConfigRestartKeys = [
-  "co.gwil.deno.config.enableLsp",
-  "deno.enablePaths",
   "co.gwil.deno.config.enableLinting",
   "co.gwil.deno.config.enableUnstable",
   "co.gwil.deno.config.import-map",
+  "co.gwil.deno.config.trustedImportHosts",
+  "co.gwil.deno.config.untrustedImportHosts",
   "co.gwil.deno.config.documentPreloadLimit",
   "co.gwil.deno.config.maxTsServerMemory",
 ];

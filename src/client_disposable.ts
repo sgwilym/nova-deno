@@ -122,13 +122,17 @@ export async function makeClientDisposable(
         enable: getOverridableBoolean("co.gwil.deno.config.enableLsp"),
         enablePaths: nova.workspace.config.get(ENABLED_PATHS_CONFIG_KEY) || [],
         lint: getOverridableBoolean("co.gwil.deno.config.enableLinting"),
+        cacheOnSave: getOverridableBoolean("co.gwil.deno.config.cacheOnSave"),
         unstable: getOverridableBoolean("co.gwil.deno.config.enableUnstable"),
         importMap: nova.workspace.config.get("co.gwil.deno.config.import-map"),
         suggest: {
           names: true,
           paths: true,
           autoImports: true,
-          completeFunctionCalls: true,
+          completeFunctionCalls: nova.config.get(
+            "co.gwil.deno.config.completeFunctionCalls",
+            "boolean",
+          ) || false,
           imports: {
             autoDiscover: true,
             hosts: getHostsMap(),

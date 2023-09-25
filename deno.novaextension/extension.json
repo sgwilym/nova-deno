@@ -55,8 +55,9 @@
       "default": true
     },
     {
-      "key": "deno.config.enableUnstable",
-      "title": "Support unstable Deno APIs",
+      "key": "co.gwil.deno.config.completeFunctionCalls",
+      "title": "Complete function calls",
+      "description": "Whether to include parentheses and argument placeholders when selecting an autocomplete option for a function whose signature is known.",
       "type": "boolean",
       "default": false
     }
@@ -74,12 +75,6 @@
         ["true", "Enable"]
       ],
       "default": "null"
-    },
-    {
-      "key": "co.gwil.deno.config.enableLsp",
-      "title": "Enable Deno Language features",
-      "description": "Turn Deno integration on. If you have the TypeScript extension installed, you'll need to disable it.",
-      "type": "boolean"
     },
     {
       "key": "deno.enablePaths",
