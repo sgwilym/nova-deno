@@ -55,14 +55,26 @@
       "default": true
     },
     {
-      "key": "deno.config.enableUnstable",
-      "title": "Support unstable Deno APIs",
+      "key": "co.gwil.deno.config.completeFunctionCalls",
+      "title": "Complete function calls",
+      "description": "Whether to include parentheses and argument placeholders when selecting an autocomplete option for a function whose signature is known.",
       "type": "boolean",
       "default": false
     }
   ],
 
   "configWorkspace": [
+    {
+      "key": "co.gwil.deno.config.enableLsp",
+      "title": "Enable Deno Language features",
+      "description": "Use this if you only want the Deno LSP enabled for certain projects.",
+      "values": [
+        ["null", "Inherit from Global Settings"],
+        ["false", "Disable"],
+        ["true", "Enable"]
+      ],
+      "default": "null"
+    },
     {
       "key": "co.gwil.deno.config.formatOnSave",
       "title": "Format document on save",
@@ -76,15 +88,17 @@
       "default": "null"
     },
     {
-      "key": "co.gwil.deno.config.enableLsp",
-      "title": "Enable Deno Language features",
-      "description": "Turn Deno integration on. If you have the TypeScript extension installed, you'll need to disable it.",
-      "type": "boolean"
-    },
-    {
       "key": "deno.enablePaths",
       "title": "Enabled paths",
-      "description": "Choose paths in which to enable Deno integration. For features to be enabled invariably, leave this blank.",
+      "description": "Enable extension functionality for the specified paths.",
+      "type": "pathArray",
+      "allowFolders": true,
+      "relative": true
+    },
+    {
+      "key": "deno.disablePaths",
+      "title": "Disabled paths",
+      "description": "Disable extension functionality for the specified paths.",
       "type": "pathArray",
       "allowFolders": true,
       "relative": true

@@ -1,3 +1,13 @@
+## v1.3.0
+
+Added two new configuration options:
+
+- Added a per-workspace "Disabled paths" setting. The Deno extension will not be
+  enabled for these paths.
+- Added a per-workspace "Complete function calls" setting. When enabled, this
+  will include parenthese and arguments when selecting an autocomplete for a
+  known function.
+
 ## v1.2.0
 
 Added some features to improve the performance of this extension with large
