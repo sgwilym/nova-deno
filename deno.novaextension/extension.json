@@ -65,6 +65,17 @@
 
   "configWorkspace": [
     {
+      "key": "co.gwil.deno.config.enableLsp",
+      "title": "Enable Deno Language features",
+      "description": "Use this if you only want the Deno LSP enabled for certain projects.",
+      "values": [
+        ["null", "Inherit from Global Settings"],
+        ["false", "Disable"],
+        ["true", "Enable"]
+      ],
+      "default": "null"
+    },
+    {
       "key": "co.gwil.deno.config.formatOnSave",
       "title": "Format document on save",
       "description": "Run Format Document command on file save.",
