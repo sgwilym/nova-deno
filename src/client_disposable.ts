@@ -119,10 +119,9 @@ export async function makeClientDisposable(
     {
       syntaxes,
       initializationOptions: {
-        enable: getOverridableBoolean("co.gwil.deno.config.enableLsp"),
+        enable: true,
         enablePaths: nova.workspace.config.get(ENABLED_PATHS_CONFIG_KEY) || [],
         lint: getOverridableBoolean("co.gwil.deno.config.enableLinting"),
-        cacheOnSave: getOverridableBoolean("co.gwil.deno.config.cacheOnSave"),
         unstable: getOverridableBoolean("co.gwil.deno.config.enableUnstable"),
         importMap: nova.workspace.config.get("co.gwil.deno.config.import-map"),
         suggest: {

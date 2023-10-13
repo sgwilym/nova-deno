@@ -34,13 +34,6 @@
 
   "config": [
     {
-      "key": "co.gwil.deno.config.enableLsp",
-      "title": "Enable Deno Language features",
-      "description": "Turn Deno integration on. If you have the TypeScript extension installed, you'll need to disable it.",
-      "type": "boolean",
-      "default": true
-    },
-    {
       "key": "co.gwil.deno.config.enableLinting",
       "title": "Enable linting",
       "description": "Turn on Deno's built-in linting.",
@@ -65,15 +58,11 @@
 
   "configWorkspace": [
     {
-      "key": "co.gwil.deno.config.enableLsp",
+      "key": "deno.enable",
       "title": "Enable Deno Language features",
-      "description": "Use this if you only want the Deno LSP enabled for certain projects.",
-      "values": [
-        ["null", "Inherit from Global Settings"],
-        ["false", "Disable"],
-        ["true", "Enable"]
-      ],
-      "default": "null"
+      "type": "boolean",
+      "description": "Use this to disable the usage of Deno with specific projects. This option will be overriden by the 'Enable paths' and 'Disabled paths' options.",
+      "default": true
     },
     {
       "key": "co.gwil.deno.config.formatOnSave",
@@ -90,18 +79,20 @@
     {
       "key": "deno.enablePaths",
       "title": "Enabled paths",
-      "description": "Enable extension functionality for the specified paths.",
+      "description": "Restrict extension functionality to the specified paths.",
       "type": "pathArray",
       "allowFolders": true,
-      "relative": true
+      "relative": true,
+      "default": []
     },
     {
       "key": "deno.disablePaths",
       "title": "Disabled paths",
-      "description": "Disable extension functionality for the specified paths.",
+      "description": "Exclude extension functionality from the specified paths.",
       "type": "pathArray",
       "allowFolders": true,
-      "relative": true
+      "relative": true,
+      "default": []
     },
     {
       "key": "co.gwil.deno.config.enableLinting",
