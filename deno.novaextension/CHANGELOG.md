@@ -1,3 +1,19 @@
+## v1.4.0
+
+Added a new configuration option:
+
+- Added new global and project settings for "Cache on save". When enabled, the
+  extension will automatically cache dependencies when a file is saved without
+  you needing to run the 'Cache dependencies' command. Turned off by default!
+
+- Removed the "Enable Deno Language features" global setting. The language
+  features are now on by default, and can be manually turned off on in the
+  project settings.
+- Updated some of the settings descriptions to better explain how the "Enable
+  Deno features", "Enabled paths", and "Disabled paths" settings interact.
+- Added default values for "Enabled paths" and "Disabled paths" settings so that
+  the LSP does not get upset. Hopefully.
+
 ## v1.3.0
 
 Added two new configuration options:
@@ -36,7 +52,7 @@ codebases.
 
 ## v1.0.3
 
-- Fixed an issue where the "Enable Deno Language Features" preferenc was not
+- Fixed an issue where the "Enable Deno Language Features" preference was not
   being respected (thanks again, [belcar-s](https://github.com/belcar-s)!)
 
 ## v1.0.2
