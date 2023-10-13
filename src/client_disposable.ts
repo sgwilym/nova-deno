@@ -121,6 +121,7 @@ export async function makeClientDisposable(
       initializationOptions: {
         enable: true,
         enablePaths: nova.workspace.config.get(ENABLED_PATHS_CONFIG_KEY) || [],
+        cacheOnSave: getOverridableBoolean("co.gwil.deno.config.cacheOnSave"),
         lint: getOverridableBoolean("co.gwil.deno.config.enableLinting"),
         unstable: getOverridableBoolean("co.gwil.deno.config.enableUnstable"),
         importMap: nova.workspace.config.get("co.gwil.deno.config.import-map"),

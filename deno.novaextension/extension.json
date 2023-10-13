@@ -43,9 +43,16 @@
     {
       "key": "co.gwil.deno.config.formatOnSave",
       "title": "Format document on save",
-      "description": "Run Format Document command on file save.",
+      "description": "Use Deno's built-in formatter to format files when they are saved.",
       "type": "boolean",
       "default": true
+    },
+    {
+      "key": "co.gwil.deno.config.cacheOnSave",
+      "title": "Cache dependencies on save",
+      "description": "Automatically cache dependencies when a file is saved.",
+      "type": "boolean",
+      "default": false
     },
     {
       "key": "co.gwil.deno.config.completeFunctionCalls",
@@ -67,7 +74,19 @@
     {
       "key": "co.gwil.deno.config.formatOnSave",
       "title": "Format document on save",
-      "description": "Run Format Document command on file save.",
+      "description": "Use Deno's built-in formatter to format files when they are saved. Requires Deno 1.37.",
+      "type": "enum",
+      "values": [
+        ["null", "Inherit from Global Settings"],
+        ["false", "Disable"],
+        ["true", "Enable"]
+      ],
+      "default": "null"
+    },
+    {
+      "key": "co.gwil.deno.config.cacheOnSave",
+      "title": "Cache dependencies on save",
+      "description": "Automatically cache dependencies when a file is saved.",
       "type": "enum",
       "values": [
         ["null", "Inherit from Global Settings"],

@@ -20,14 +20,14 @@ const compositeDisposable = new CompositeDisposable();
 const taskDisposable = new CompositeDisposable();
 
 const configRestartKeys = [
-  "co.gwil.deno.config.enableLsp",
   "co.gwil.deno.config.enableLinting",
+  "co.gwil.deno.config.cacheOnSave",
   "co.gwil.deno.config.completeFunctionCalls",
 ];
 
 const workspaceConfigRestartKeys = [
-  "co.gwil.deno.config.enableLsp",
   "co.gwil.deno.config.enableLinting",
+  "co.gwil.deno.config.cacheOnSave",
   "co.gwil.deno.config.enableUnstable",
   "co.gwil.deno.config.import-map",
   "co.gwil.deno.config.trustedImportHosts",
