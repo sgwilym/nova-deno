@@ -5,19 +5,13 @@ import {
   TextDocument,
   TextEditor,
 } from "./nova_utils.ts";
-import {
-  configFilenames,
-  registerBundleTask,
-  registerDenoTasks,
-  registerRunTask,
-} from "./tasks.ts";
+import { configFilenames, registerDenoTasks } from "./tasks.ts";
 import {
   CanNotEnsureError,
   makeClientDisposable,
 } from "./client_disposable.ts";
 
 const compositeDisposable = new CompositeDisposable();
-const taskDisposable = new CompositeDisposable();
 
 const configRestartKeys = [
   "co.gwil.deno.config.enableLinting",
@@ -50,8 +44,6 @@ export async function activate() {
   compositeDisposable.add(clientDisposable);
 
   compositeDisposable.add(registerDenoTasks());
-  compositeDisposable.add(registerRunTask());
-  compositeDisposable.add(registerBundleTask());
 
   compositeDisposable.add(registerEditorWatcher());
 
@@ -79,7 +71,6 @@ export async function activate() {
   );
 
   nova.subscriptions.add(compositeDisposable);
-  nova.subscriptions.add(taskDisposable);
 }
 
 export function deactivate() {
@@ -91,10 +82,9 @@ function watchConfigFiles(workspacePath: string | null, filenames: string[]) {
 
   return filenames.map((filename) => {
     const denoConfigPath = nova.path.join(workspacePath, filename);
+
     return nova.fs.watch(denoConfigPath, () => {
-      taskDisposable.dispose();
-      taskDisposable.add(registerDenoTasks());
-      nova.commands.invoke("co.gwil.deno.commands.restartServer");
+      nova.workspace.reloadTasks("co.gwil.deno.tasks.auto");
     });
   });
 }
