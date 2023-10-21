@@ -3,7 +3,7 @@
   "name": "Deno",
   "organization": "Sam Gwilym",
   "description": "Everything you need for TypeScript and JavaScript development.",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "categories": [
     "languages",
     "formatters",
@@ -72,6 +72,24 @@
       "default": true
     },
     {
+      "key": "co.gwil.deno.config.enableUnstable",
+      "title": "Support unstable Deno APIs",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "key": "co.gwil.deno.config.enableLinting",
+      "title": "Enable linting",
+      "description": "Turn on Deno's built-in linting.",
+      "type": "enum",
+      "values": [
+        ["null", "Inherit from Global Settings"],
+        ["false", "Disable"],
+        ["true", "Enable"]
+      ],
+      "default": "null"
+    },
+    {
       "key": "co.gwil.deno.config.formatOnSave",
       "title": "Format document on save",
       "description": "Use Deno's built-in formatter to format files when they are saved. Requires Deno 1.37.",
@@ -112,29 +130,6 @@
       "allowFolders": true,
       "relative": true,
       "default": []
-    },
-    {
-      "key": "co.gwil.deno.config.enableLinting",
-      "title": "Enable linting",
-      "description": "Turn on Deno's built-in linting.",
-      "type": "enum",
-      "values": [
-        ["null", "Inherit from Global Settings"],
-        ["false", "Disable"],
-        ["true", "Enable"]
-      ],
-      "default": "null"
-    },
-    {
-      "key": "co.gwil.deno.config.enableUnstable",
-      "title": "Support unstable Deno APIs",
-      "type": "enum",
-      "values": [
-        ["null", "Inherit from Global Settings"],
-        ["false", "Disable"],
-        ["true", "Enable"]
-      ],
-      "default": "null"
     },
     {
       "key": "co.gwil.deno.config.import-map",
