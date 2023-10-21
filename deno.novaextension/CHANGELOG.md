@@ -1,3 +1,15 @@
+## v1.4.1
+
+Two small bug fixes.
+
+- The per-workspace setting for enabling unstable Deno APIs is now respected.
+- Deno task detection has been made more efficient.
+
+Additionally, the task templates for `Deno Run` and `Deno Bundle` have been
+removed. Deno's `bundle` command has been deprecated for a while (see
+https://docs.deno.com/runtime/manual/tools/bundler), and Deno `run` is far
+better server by the task runner API.
+
 ## v1.4.0
 
 Added a new configuration option:
