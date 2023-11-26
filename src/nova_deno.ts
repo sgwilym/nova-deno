@@ -10,6 +10,7 @@ import {
   CanNotEnsureError,
   makeClientDisposable,
 } from "./client_disposable.ts";
+import { registerTestsSidebar } from "./tests/register.ts";
 
 const compositeDisposable = new CompositeDisposable();
 
@@ -46,6 +47,8 @@ export async function activate() {
   compositeDisposable.add(registerDenoTasks());
 
   compositeDisposable.add(registerEditorWatcher());
+
+  compositeDisposable.add(registerTestsSidebar());
 
   const configFileWatchingDisposables = watchConfigFiles(
     nova.workspace.path,

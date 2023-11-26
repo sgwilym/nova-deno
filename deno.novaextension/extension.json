@@ -182,17 +182,54 @@
     {
       "id": "co.gwil.deno.sidebars.symbols",
       "name": "Deno Symbols",
-      "placeholderText": "Use the Find Symbol command to find symbols with Deno.",
       "largeImage": "sidebar_large",
       "smallImage": "sidebar_small",
       "sections": [
         {
           "id": "co.gwil.deno.sidebars.symbols.sections.1",
+          "placeholderText": "Use the Find Symbol command to find symbols with Deno.",
           "name": "Symbols",
           "headerCommands": [
             {
               "title": "Find",
               "command": "co.gwil.deno.sidebars.symbols.commands.find"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "co.gwil.deno.sidebars.tests",
+      "name": "Deno Tests",
+      "largeImage": "test_sidebar_large",
+      "smallImage": "test_sidebar_small",
+      "sections": [
+        {
+          "id": "co.gwil.deno.sidebars.tests.sections.1",
+          "placeholderText": "No tests were found.",
+          "name": "Tests",
+          "headerCommands": [
+            {
+              "title": "Learn more",
+              "command": "co.gwil.deno.sidebars.tests.commands.learn"
+            },
+            {
+              "title": "Refresh",
+              "tooltip": "Check for the addition or removal of test files",
+              "command": "co.gwil.deno.sidebars.tests.commands.refresh",
+              "image": "__builtin.refresh"
+            },
+            {
+              "title": "Run All",
+              "command": "co.gwil.deno.sidebars.tests.commands.runAll",
+              "image": "run"
+            }
+          ],
+          "contextCommands": [
+            {
+              "title": "Run",
+              "command": "co.gwil.deno.sidebars.tests.commands.run",
+              "when": "viewItem == 'file'"
             }
           ]
         }
