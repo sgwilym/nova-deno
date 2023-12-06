@@ -1,12 +1,4 @@
-import {
-  CompositeDisposable,
-  getOverridableBoolean,
-  LanguageClient,
-  NotificationRequest,
-  nova,
-  Process,
-  wrapCommand,
-} from "./nova_utils.ts";
+import { getOverridableBoolean, wrapCommand } from "./nova_utils.ts";
 import registerFormatDocument from "./commands/format_document.ts";
 import registerCache from "./commands/cache.ts";
 import registerRenameSymbol from "./commands/rename_symbol.ts";
@@ -108,6 +100,8 @@ export async function makeClientDisposable(
 
   await ensureDenoIsInstalled();
 
+  const importMap = nova.workspace.config.get("co.gwil.deno.config.import-map");
+
   const client = new LanguageClient(
     "co.gwil.deno",
     "Deno Language Server",
@@ -127,7 +121,7 @@ export async function makeClientDisposable(
           "co.gwil.deno.config.enableUnstable",
           "boolean",
         ),
-        importMap: nova.workspace.config.get("co.gwil.deno.config.import-map"),
+        ...(importMap ? { importMap } : {}),
         suggest: {
           names: true,
           paths: true,

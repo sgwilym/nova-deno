@@ -1,11 +1,4 @@
-import {
-  isWorkspace,
-  LanguageClient,
-  nova,
-  TextEditor,
-  Workspace,
-  wrapCommand,
-} from "../nova_utils.ts";
+import { isWorkspace, wrapCommand } from "../nova_utils.ts";
 
 export default function cache(client: LanguageClient) {
   return nova.commands.register(

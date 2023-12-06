@@ -1,5 +1,8 @@
 {
   "tasks": {
     "build": "deno run --allow-all --unstable build.ts"
+  },
+  "imports": {
+    "nova-utils": "../Archive/nova_utils/mod.ts"
   }
 }

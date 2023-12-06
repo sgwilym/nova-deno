@@ -1,10 +1,3 @@
-import {
-  CompositeDisposable,
-  Configuration,
-  nova,
-  TextDocument,
-  TextEditor,
-} from "./nova_utils.ts";
 import { configFilenames, registerDenoTasks } from "./tasks.ts";
 import {
   CanNotEnsureError,

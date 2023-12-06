@@ -1,4 +1,3 @@
-import { nova, Task, TaskAssistant, TaskProcessAction } from "./nova_utils.ts";
 import { stripJSONcomments } from "../deps.ts";
 
 export const configFilenames = [

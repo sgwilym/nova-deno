@@ -2,11 +2,7 @@ import { lsp } from "../../deps.ts";
 import {
   applyWorkspaceEdit,
   isWorkspace,
-  LanguageClient,
-  nova,
   rangeToLspRange,
-  TextEditor,
-  Workspace,
   wrapCommand,
 } from "../nova_utils.ts";
 

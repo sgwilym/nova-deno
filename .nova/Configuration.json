@@ -1,10 +1,9 @@
 {
-  "deno.disablePaths" : [
-
+  "deno.disablePaths": [],
+  "deno.enablePaths": [
+    "src",
+    "build.ts"
   ],
-  "deno.enablePaths" : [
-    "src"
-  ],
-  "workspace.art_style" : 0,
-  "workspace.name" : "nova-deno"
+  "workspace.art_style": 0,
+  "workspace.name": "nova-deno"
 }
