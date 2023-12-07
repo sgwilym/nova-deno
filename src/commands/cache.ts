@@ -1,4 +1,4 @@
-import { isWorkspace, wrapCommand } from "../nova_utils.ts";
+import { isWorkspace, wrapCommand } from "nova-utils";
 
 export default function cache(client: LanguageClient) {
   return nova.commands.register(
@@ -14,7 +14,7 @@ export default function cache(client: LanguageClient) {
       : workspaceOrEditor;
 
     const referrer = {
-      uri: editor.document.uri,
+      uri: editor!.document.uri,
     };
 
     await client.sendRequest("deno/cache", {

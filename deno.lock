@@ -2,14 +2,22 @@
   "version": "3",
   "packages": {
     "specifiers": {
+      "npm:@types/nova-editor-node": "npm:@types/nova-editor-node@5.1.4",
       "npm:vscode-languageserver-types": "npm:vscode-languageserver-types@3.17.5"
     },
     "npm": {
+      "@types/nova-editor-node@5.1.4": {
+        "integrity": "sha512-S/GlHNya+zA+EyYxl/EnEPB7xJTGz5RDz/MU3ZytMK4Hl6rQSegl0Deq7t+2NnxwYFdRnJ9RVMsLDIQQHXxLGw==",
+        "dependencies": {}
+      },
       "vscode-languageserver-types@3.17.5": {
         "integrity": "sha512-Ld1VelNuX9pdF39h2Hgaeb5hEZM2Z3jUrrMgWQAu82jMtZp7p3vJT3BzToKtZI7NgQssZje5o0zryOrhQvzQAg==",
         "dependencies": {}
       }
     }
+  },
+  "redirects": {
+    "https://esm.sh/@types/nova-editor-node": "https://esm.sh/v135/@types/nova-editor-node@5.1.4/index.d.ts"
   },
   "remote": {
     "https://deno.land/std@0.140.0/_util/assert.ts": "e94f2eb37cebd7f199952e242c77654e43333c1ac4c5c700e929ea3aa5489f74",
@@ -113,6 +121,7 @@
     "https://deno.land/x/emit@0.0.2/lib/deno_emit.generated.js": "ef748eb9fa6b28567be22ff05ca5e4428fc08aa8bf06dab958c7206d6296de71",
     "https://deno.land/x/emit@0.0.2/mod.ts": "91f69c194d4ab61b3950e84bfe086d0db2463bd4950950a12e5b101b3d2d4781",
     "https://deno.land/x/esbuild@v0.14.11/mod.js": "a820183fd5835b42d68ea6e558a551624d611a30d71f7ff5a35b4bbd7010c574",
+    "https://deno.land/x/esbuild@v0.19.2/mod.js": "d619154b9c1cc70e8ee4b8db94fb01f00767c9e83089c135cede0cd3edd342a0",
     "https://deno.land/x/esbuild@v0.19.7/mod.js": "a065cc38cd52019fe17c0d097f4389e3b10a6c699024e4e31a7475bb5e70cfb0",
     "https://deno.land/x/esbuild_deno_loader@0.8.2/deps.ts": "c1aa4747e43d3ae09da96e54aac798ed9bb967634cff72f21b7fab6e5435c293",
     "https://deno.land/x/esbuild_deno_loader@0.8.2/mod.ts": "28524460bef46d487221b01ade6ed913d2e127de7eeee025ab75b34b491283da",

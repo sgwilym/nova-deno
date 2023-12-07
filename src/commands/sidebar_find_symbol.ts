@@ -1,5 +1,6 @@
-import { lspRangeToRange, wrapCommand } from "../nova_utils.ts";
-import { lsp } from "../../deps.ts";
+import * as lsp from "lsp";
+import { lspRangeToRange, wrapCommand } from "nova-utils";
+
 let symbolDataProvider: SymbolDataProvider | null = null;
 
 interface ElementConversionOptions {

@@ -1,4 +1,4 @@
-import { stripJSONcomments } from "../deps.ts";
+import stripJSONcomments from "strip-json";
 
 export const configFilenames = [
   "deno.json",
