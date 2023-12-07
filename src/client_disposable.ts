@@ -1,18 +1,10 @@
-import {
-  CompositeDisposable,
-  getOverridableBoolean,
-  LanguageClient,
-  NotificationRequest,
-  nova,
-  Process,
-  wrapCommand,
-} from "./nova_utils.ts";
 import registerFormatDocument from "./commands/format_document.ts";
 import registerCache from "./commands/cache.ts";
 import registerRenameSymbol from "./commands/rename_symbol.ts";
 import registerPaletteFindSymbol from "./commands/palette_find_symbol.ts";
 import registerSymbolSidebarFindSymbol from "./commands/sidebar_find_symbol.ts";
 import syntaxes from "./syntaxes.ts";
+import { getOverridableBoolean, wrapCommand } from "nova-utils";
 
 const FORMAT_ON_SAVE_CONFIG_KEY = "co.gwil.deno.config.formatOnSave";
 const TRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.trustedImportHosts";
@@ -24,6 +16,7 @@ const ENABLED_PATHS_CONFIG_KEY = "deno.enablePaths";
 function getHostsMap() {
   const trustedHosts = nova.config.get(TRUSTED_HOSTS_CONFIG_KEY) as string[] ||
     [];
+
   const untrustedHosts =
     nova.config.get(UNTRUSTED_HOSTS_CONFIG_KEY) as string[] ||
     [];
@@ -108,6 +101,8 @@ export async function makeClientDisposable(
 
   await ensureDenoIsInstalled();
 
+  const importMap = nova.workspace.config.get("deno.importMap");
+
   const client = new LanguageClient(
     "co.gwil.deno",
     "Deno Language Server",
@@ -121,19 +116,19 @@ export async function makeClientDisposable(
       initializationOptions: {
         enable: true,
         enablePaths: nova.workspace.config.get(ENABLED_PATHS_CONFIG_KEY) || [],
-        cacheOnSave: getOverridableBoolean("co.gwil.deno.config.cacheOnSave"),
-        lint: getOverridableBoolean("co.gwil.deno.config.enableLinting"),
+        cacheOnSave: nova.workspace.config.get("deno.cacheOnSave", "boolean"),
+        lint: nova.workspace.config.get("deno.lint", "boolean"),
         unstable: nova.workspace.config.get(
-          "co.gwil.deno.config.enableUnstable",
+          "deno.unstable",
           "boolean",
         ),
-        importMap: nova.workspace.config.get("co.gwil.deno.config.import-map"),
+        ...(importMap ? { importMap } : {}),
         suggest: {
           names: true,
           paths: true,
           autoImports: true,
-          completeFunctionCalls: nova.config.get(
-            "co.gwil.deno.config.completeFunctionCalls",
+          completeFunctionCalls: nova.workspace.config.get(
+            "deno.suggest.completeFunctionCalls",
             "boolean",
           ) || false,
           imports: {
@@ -190,6 +185,7 @@ export async function makeClientDisposable(
       );
 
       let willSaveListener = setupOnSaveListener();
+      // @ts-ignore Getting Nova's Disposable and ES Disposables confused.
       clientDisposable.add({
         dispose() {
           willSaveListener?.dispose();
@@ -224,10 +220,10 @@ export async function makeClientDisposable(
       async (
         { origin, suggestions }: { origin: string; suggestions: string },
       ) => {
-        const trustedHosts = nova.config.get(
+        const trustedHosts = nova.workspace.config.get(
           TRUSTED_HOSTS_CONFIG_KEY,
         ) as string[] || [];
-        const untrustedHosts = nova.config.get(
+        const untrustedHosts = nova.workspace.config.get(
           UNTRUSTED_HOSTS_CONFIG_KEY,
         ) as string[] || [];
 
@@ -278,11 +274,14 @@ export async function makeClientDisposable(
           });
 
           isRestarting = true;
+
+          parentDisposable.remove(clientDisposable);
           clientDisposable.dispose();
         }
       }),
     ));
 
+    // @ts-ignore Getting Nova's Disposable and ES Disposables confused.
     clientDisposable.add({
       dispose() {
         client.stop();

@@ -1,16 +1,12 @@
-import { lsp } from "../../deps.ts";
+// @Panic: this is totally decoupled from typescript, so it could totally be native to Nova
+
 import {
   applyWorkspaceEdit,
   isWorkspace,
-  LanguageClient,
-  nova,
   rangeToLspRange,
-  TextEditor,
-  Workspace,
   wrapCommand,
-} from "../nova_utils.ts";
-
-// @Panic: this is totally decoupled from typescript, so it could totally be native to Nova
+} from "nova-utils";
+import * as lsp from "lsp";
 
 export default function registerRename(client: LanguageClient) {
   return nova.commands.register(
@@ -22,7 +18,7 @@ export default function registerRename(client: LanguageClient) {
     // Select full word. It will be shown in a palette so the user can review it
 
     const editor = isWorkspace(workspaceOrEditor)
-      ? workspaceOrEditor.activeTextEditor
+      ? workspaceOrEditor.activeTextEditor!
       : workspaceOrEditor;
 
     editor.selectWordsContainingCursors();

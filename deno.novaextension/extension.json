@@ -34,32 +34,11 @@
 
   "config": [
     {
-      "key": "co.gwil.deno.config.enableLinting",
-      "title": "Enable linting",
-      "description": "Turn on Deno's built-in linting.",
-      "type": "boolean",
-      "default": true
-    },
-    {
       "key": "co.gwil.deno.config.formatOnSave",
       "title": "Format document on save",
       "description": "Use Deno's built-in formatter to format files when they are saved.",
       "type": "boolean",
       "default": true
-    },
-    {
-      "key": "co.gwil.deno.config.cacheOnSave",
-      "title": "Cache dependencies on save",
-      "description": "Automatically cache dependencies when a file is saved.",
-      "type": "boolean",
-      "default": false
-    },
-    {
-      "key": "co.gwil.deno.config.completeFunctionCalls",
-      "title": "Complete function calls",
-      "description": "Whether to include parentheses and argument placeholders when selecting an autocomplete option for a function whose signature is known.",
-      "type": "boolean",
-      "default": false
     }
   ],
 
@@ -72,22 +51,17 @@
       "default": true
     },
     {
-      "key": "co.gwil.deno.config.enableUnstable",
+      "key": "deno.unstable",
       "title": "Support unstable Deno APIs",
       "type": "boolean",
       "default": false
     },
     {
-      "key": "co.gwil.deno.config.enableLinting",
+      "key": "deno.lint",
       "title": "Enable linting",
       "description": "Turn on Deno's built-in linting.",
-      "type": "enum",
-      "values": [
-        ["null", "Inherit from Global Settings"],
-        ["false", "Disable"],
-        ["true", "Enable"]
-      ],
-      "default": "null"
+      "type": "boolean",
+      "default": true
     },
     {
       "key": "co.gwil.deno.config.formatOnSave",
@@ -102,16 +76,11 @@
       "default": "null"
     },
     {
-      "key": "co.gwil.deno.config.cacheOnSave",
+      "key": "deno.cacheOnSave",
       "title": "Cache dependencies on save",
       "description": "Automatically cache dependencies when a file is saved.",
-      "type": "enum",
-      "values": [
-        ["null", "Inherit from Global Settings"],
-        ["false", "Disable"],
-        ["true", "Enable"]
-      ],
-      "default": "null"
+      "type": "boolean",
+      "default": true
     },
     {
       "key": "deno.enablePaths",
@@ -132,11 +101,18 @@
       "default": []
     },
     {
-      "key": "co.gwil.deno.config.import-map",
+      "key": "deno.importMap",
       "title": "Import map",
       "link": "https://deno.land/manual/linking_to_external_code/import_maps",
       "description": "Load import map file from local file or remote URL. Automatically detected in the deno.json as of Deno 1.20.",
       "type": "string"
+    },
+    {
+      "key": "deno.suggest.completeFunctionCalls",
+      "title": "Complete function calls",
+      "description": "Whether to include parentheses and argument placeholders when selecting an autocomplete option for a function whose signature is known.",
+      "type": "boolean",
+      "default": false
     },
     {
       "title": "Import suggestions",

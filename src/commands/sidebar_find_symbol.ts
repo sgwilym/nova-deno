@@ -1,17 +1,6 @@
-import {
-  Configuration,
-  Disposable,
-  LanguageClient,
-  lspRangeToRange,
-  NotificationRequest,
-  nova,
-  TreeDataProvider,
-  TreeItem,
-  TreeItemCollapsibleState,
-  TreeView,
-  wrapCommand,
-} from "../nova_utils.ts";
-import { lsp } from "../../deps.ts";
+import * as lsp from "lsp";
+import { lspRangeToRange, wrapCommand } from "nova-utils";
+
 let symbolDataProvider: SymbolDataProvider | null = null;
 
 interface ElementConversionOptions {

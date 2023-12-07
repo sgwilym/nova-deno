@@ -1,5 +1,4 @@
-import { nova, Task, TaskAssistant, TaskProcessAction } from "./nova_utils.ts";
-import { stripJSONcomments } from "../deps.ts";
+import stripJSONcomments from "strip-json";
 
 export const configFilenames = [
   "deno.json",

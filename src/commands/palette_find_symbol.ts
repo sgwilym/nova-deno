@@ -1,4 +1,4 @@
-import { NotificationRequest, nova, wrapCommand } from "../nova_utils.ts";
+import { wrapCommand } from "nova-utils";
 
 export default function registerFindSymbol() {
   return nova.commands.register(

@@ -1,10 +1,3 @@
-import {
-  CompositeDisposable,
-  Configuration,
-  nova,
-  TextDocument,
-  TextEditor,
-} from "./nova_utils.ts";
 import { configFilenames, registerDenoTasks } from "./tasks.ts";
 import {
   CanNotEnsureError,
@@ -13,17 +6,7 @@ import {
 
 const compositeDisposable = new CompositeDisposable();
 
-const configRestartKeys = [
-  "co.gwil.deno.config.enableLinting",
-  "co.gwil.deno.config.cacheOnSave",
-  "co.gwil.deno.config.completeFunctionCalls",
-];
-
 const workspaceConfigRestartKeys = [
-  "co.gwil.deno.config.enableLinting",
-  "co.gwil.deno.config.cacheOnSave",
-  "co.gwil.deno.config.enableUnstable",
-  "co.gwil.deno.config.import-map",
   "co.gwil.deno.config.trustedImportHosts",
   "co.gwil.deno.config.untrustedImportHosts",
   "co.gwil.deno.config.documentPreloadLimit",
@@ -52,17 +35,12 @@ export async function activate() {
     configFilenames,
   );
 
-  const configRestartDisposables = restartServerOnConfigChanges(
-    configRestartKeys,
-  );
-
   const workspaceRestartDisposables = restartServerOnWorkspaceConfigChanges(
     workspaceConfigRestartKeys,
   );
 
   [
     ...configFileWatchingDisposables,
-    ...configRestartDisposables,
     ...workspaceRestartDisposables,
   ].forEach(
     (disposable) => {
@@ -85,14 +63,6 @@ function watchConfigFiles(workspacePath: string | null, filenames: string[]) {
 
     return nova.fs.watch(denoConfigPath, () => {
       nova.workspace.reloadTasks("co.gwil.deno.tasks.auto");
-    });
-  });
-}
-
-function restartServerOnConfigChanges(keys: string[]) {
-  return keys.map((key) => {
-    return nova.config.onDidChange(key, () => {
-      nova.commands.invoke("co.gwil.deno.commands.restartServer");
     });
   });
 }
