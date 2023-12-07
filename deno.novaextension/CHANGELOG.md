@@ -1,3 +1,14 @@
+## v1.4.2
+
+- The per-workspace setting for enabling unstable Deno APIs is now _really_
+  respected.
+- Preferences for lining, cache on save, and complete function calls have all
+  been moved to workspace settings. Changing these settings will no longer
+  restart the LSP client!
+- Fixed an out of bounds issue for LSP <> Nova range conversions.
+- The build process for the extension has been improved, resulting in a smaller
+  extension.
+
 ## v1.4.1
 
 Two small bug fixes.
