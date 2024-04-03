@@ -5,6 +5,6 @@
   "imports": {
     "lsp": "npm:vscode-languageserver-types",
     "strip-json": "https://esm.sh/strip-json-comments",
-    "nova-utils": "https://raw.githubusercontent.com/sgwilym/nova_utils/main/mod.ts"
+    "nova-utils": "../nova_utils/mod.ts"
   }
 }

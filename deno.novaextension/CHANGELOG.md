@@ -1,3 +1,8 @@
+## v1.4.3
+
+- Changed fallback value for `deno.enablePaths`, as newer versions of Deno LSP
+  interpret the previous fallback (an empty array) as enabling no paths.
+
 ## v1.4.2
 
 - The per-workspace setting for enabling unstable Deno APIs is now _really_

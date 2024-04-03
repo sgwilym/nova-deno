@@ -103,6 +103,11 @@ export async function makeClientDisposable(
 
   const importMap = nova.workspace.config.get("deno.importMap");
 
+  const enabledPaths = nova.workspace.config.get(
+    ENABLED_PATHS_CONFIG_KEY,
+    "array",
+  );
+
   const client = new LanguageClient(
     "co.gwil.deno",
     "Deno Language Server",
@@ -115,7 +120,9 @@ export async function makeClientDisposable(
       syntaxes,
       initializationOptions: {
         enable: true,
-        enablePaths: nova.workspace.config.get(ENABLED_PATHS_CONFIG_KEY) || [],
+        enablePaths: enabledPaths && enabledPaths.length > 0
+          ? enabledPaths
+          : null,
         cacheOnSave: nova.workspace.config.get("deno.cacheOnSave", "boolean"),
         lint: nova.workspace.config.get("deno.lint", "boolean"),
         unstable: nova.workspace.config.get(

@@ -17,7 +17,8 @@
     }
   },
   "redirects": {
-    "https://esm.sh/@types/nova-editor-node": "https://esm.sh/v135/@types/nova-editor-node@5.1.4/index.d.ts"
+    "https://esm.sh/@types/nova-editor-node": "https://esm.sh/v135/@types/nova-editor-node@5.1.4/index.d.ts",
+    "https://esm.sh/strip-json-comments": "https://esm.sh/strip-json-comments@5.0.1"
   },
   "remote": {
     "https://deno.land/std@0.140.0/_util/assert.ts": "e94f2eb37cebd7f199952e242c77654e43333c1ac4c5c700e929ea3aa5489f74",
@@ -132,6 +133,13 @@
     "https://deno.land/x/esbuild_deno_loader@0.8.2/src/plugin_deno_resolver.ts": "0449ed23ae93db1ec74d015a46934aefd7ba7a8f719f7a4980b616cb3f5bbee4",
     "https://deno.land/x/esbuild_deno_loader@0.8.2/src/shared.ts": "33052684aeb542ebd24da372816bbbf885cd090a7ab0fde7770801f7f5b49572",
     "https://deno.land/x/importmap@0.2.1/_util.ts": "ada9a9618b537e6c0316c048a898352396c882b9f2de38aba18fd3f2950ede89",
-    "https://deno.land/x/importmap@0.2.1/mod.ts": "ae3d1cd7eabd18c01a4960d57db471126b020f23b37ef14e1359bbb949227ade"
+    "https://deno.land/x/importmap@0.2.1/mod.ts": "ae3d1cd7eabd18c01a4960d57db471126b020f23b37ef14e1359bbb949227ade",
+    "https://esm.sh/strip-json-comments@5.0.1": "fabcbc63e4cee39c3bf8b5dd201d2ce66f25c7e4b78a7dec7a2f0cc1c813f1d1",
+    "https://esm.sh/v135/strip-json-comments@5.0.1/denonext/strip-json-comments.mjs": "b9fe1c5b40bc365d1175afd7b9bf0adb1a79aa3f3e2f31ca280088d96c5f9c67"
+  },
+  "workspace": {
+    "dependencies": [
+      "npm:vscode-languageserver-types"
+    ]
   }
 }

@@ -5,7 +5,8 @@
   "deno.cacheOnSave" : true,
   "deno.enablePaths" : [
     "src",
-    "build.ts"
+    "build.ts",
+    "deno.json"
   ],
   "deno.lint" : true,
   "workspace.art_style" : 0,

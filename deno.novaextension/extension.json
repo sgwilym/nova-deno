@@ -3,7 +3,7 @@
   "name": "Deno",
   "organization": "Sam Gwilym",
   "description": "Everything you need for TypeScript and JavaScript development.",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "categories": [
     "languages",
     "formatters",
@@ -88,8 +88,7 @@
       "description": "Restrict extension functionality to the specified paths.",
       "type": "pathArray",
       "allowFolders": true,
-      "relative": true,
-      "default": []
+      "relative": true
     },
     {
       "key": "deno.disablePaths",
