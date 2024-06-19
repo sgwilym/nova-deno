@@ -187,6 +187,13 @@
         }
       },
       {
+        "title": "Reload Import Registries",
+        "command": "co.gwil.deno.commands.reloadImportRegistries",
+        "filters": {
+          "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
+        }
+      },
+      {
         "title": "Restart Deno LSP server",
         "command": "co.gwil.deno.commands.restartServer"
       }

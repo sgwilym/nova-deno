@@ -1,6 +1,6 @@
 import { isWorkspace, wrapCommand } from "nova-utils";
 
-export default function cache(client: LanguageClient) {
+export default function registerCache(client: LanguageClient) {
 	return nova.commands.register(
 		"co.gwil.deno.commands.cache",
 		wrapCommand(cache),

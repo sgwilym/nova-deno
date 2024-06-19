@@ -1,5 +1,6 @@
 import registerFormatDocument from "./commands/format_document.ts";
 import registerCache from "./commands/cache.ts";
+import registerReloadImportRegistries from "./commands/reload_import_registries.ts";
 import registerRenameSymbol from "./commands/rename_symbol.ts";
 import registerPaletteFindSymbol from "./commands/palette_find_symbol.ts";
 import registerSymbolSidebarFindSymbol from "./commands/sidebar_find_symbol.ts";
@@ -9,7 +10,6 @@ import { getOverridableBoolean, wrapCommand } from "nova-utils";
 const FORMAT_ON_SAVE_CONFIG_KEY = "co.gwil.deno.config.formatOnSave";
 const TRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.trustedImportHosts";
 const UNTRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.untrustedImportHosts";
-const ENABLED_PATHS_CONFIG_KEY = "deno.enablePaths";
 
 // Deno expects a map of hosts for its autosuggestion feature, where each key is a URL and its value a bool representing whether it is trusted or not. Nova does not have a Configurable like this, so we'll have to assemble one out of two arrays.
 
@@ -113,7 +113,6 @@ export async function makeClientDisposable(
 		},
 		{
 			syntaxes,
-			debug: true,
 			initializationOptions: {
 				enable: true,
 
@@ -150,6 +149,7 @@ export async function makeClientDisposable(
 	try {
 		clientDisposable.add(registerFormatDocument(client));
 		clientDisposable.add(registerCache(client));
+		clientDisposable.add(registerReloadImportRegistries(client));
 		clientDisposable.add(registerRenameSymbol(client));
 
 		// palette Find Symbol command
