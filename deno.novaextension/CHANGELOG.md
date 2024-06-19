@@ -1,5 +1,6 @@
 ## NEXT
 
+- The "Cache dependencies" command was broken by the underlying command having been removed from the LSP. It has now been updated to the new command.
 - Removed the workspace "Enabled paths" and "Disabled paths" setting. If you were to add some enabled paths and remove all of them, Nova would leave an empty array, which would make the Deno LSP decide not to be enabled for anything. If you need to conditionally disable which files are analysed by the LSP, use the deno.json `exclude` option to do so.
 
 ## v1.4.3

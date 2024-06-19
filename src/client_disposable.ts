@@ -113,8 +113,10 @@ export async function makeClientDisposable(
 		},
 		{
 			syntaxes,
+			debug: true,
 			initializationOptions: {
 				enable: true,
+
 				cacheOnSave: nova.workspace.config.get("deno.cacheOnSave", "boolean"),
 				lint: nova.workspace.config.get("deno.lint", "boolean"),
 				unstable: nova.workspace.config.get(
