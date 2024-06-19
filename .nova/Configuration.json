@@ -1,14 +1,9 @@
 {
-  "co.gwil.deno.config.trustedImportHosts" : [
-    "https:\/\/deno.land"
-  ],
-  "deno.cacheOnSave" : true,
-  "deno.enablePaths" : [
-    "src",
-    "build.ts",
-    "deno.json"
-  ],
-  "deno.lint" : true,
-  "workspace.art_style" : 0,
-  "workspace.name" : "nova-deno"
+	"co.gwil.deno.config.trustedImportHosts": [
+		"https:\/\/deno.land"
+	],
+	"deno.cacheOnSave": true,
+	"deno.lint": true,
+	"workspace.art_style": 0,
+	"workspace.name": "nova-deno"
 }

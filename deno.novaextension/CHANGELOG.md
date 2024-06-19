@@ -1,3 +1,7 @@
+## NEXT
+
+- Removed the workspace "Enabled paths" and "Disabled paths" setting. If you were to add some enabled paths and remove all of them, Nova would leave an empty array, which would make the Deno LSP decide not to be enabled for anything. If you need to conditionally disable which files are analysed by the LSP, use the deno.json `exclude` option to do so.
+
 ## v1.4.3
 
 - Changed fallback value for `deno.enablePaths`, as newer versions of Deno LSP
