@@ -1,10 +1,11 @@
 {
-  "tasks": {
-    "build": "deno run --allow-all --unstable build.ts"
-  },
-  "imports": {
-    "lsp": "npm:vscode-languageserver-types",
-    "strip-json": "https://esm.sh/strip-json-comments",
-    "nova-utils": "../nova_utils/mod.ts"
-  }
+	"tasks": {
+		"build": "deno run --allow-all --unstable build.ts"
+	},
+	"imports": {
+		"lsp": "npm:vscode-languageserver-types",
+		"strip-json": "https://esm.sh/strip-json-comments",
+		"nova-utils": "../nova_utils/mod.ts"
+	},
+	"exclude": ["deno.novaextension"]
 }

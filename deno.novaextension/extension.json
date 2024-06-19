@@ -83,23 +83,6 @@
       "default": true
     },
     {
-      "key": "deno.enablePaths",
-      "title": "Enabled paths",
-      "description": "Restrict extension functionality to the specified paths.",
-      "type": "pathArray",
-      "allowFolders": true,
-      "relative": true
-    },
-    {
-      "key": "deno.disablePaths",
-      "title": "Disabled paths",
-      "description": "Exclude extension functionality from the specified paths.",
-      "type": "pathArray",
-      "allowFolders": true,
-      "relative": true,
-      "default": []
-    },
-    {
       "key": "deno.importMap",
       "title": "Import map",
       "link": "https://deno.land/manual/linking_to_external_code/import_maps",
@@ -199,6 +182,13 @@
       {
         "title": "Cache dependencies",
         "command": "co.gwil.deno.commands.cache",
+        "filters": {
+          "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
+        }
+      },
+      {
+        "title": "Reload Import Registries",
+        "command": "co.gwil.deno.commands.reloadImportRegistries",
         "filters": {
           "syntaxes": ["typescript", "tsx", "javascript", "jsx"]
         }
