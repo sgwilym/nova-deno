@@ -1,5 +1,6 @@
 ## NEXT
 
+- Manually restart the server when the config file changes.
 - The "Cache dependencies" command was broken by the underlying command having been removed from the LSP. It has now been updated to the new command.
 - Removed the workspace "Enabled paths" and "Disabled paths" setting. If you were to add some enabled paths and remove all of them, Nova would leave an empty array, which would make the Deno LSP decide not to be enabled for anything. If you need to conditionally disable which files are analysed by the LSP, use the deno.json `exclude` option to do so.
 
@@ -12,7 +13,7 @@
 
 - The per-workspace setting for enabling unstable Deno APIs is now _really_
   respected.
-- Preferences for lining, cache on save, and complete function calls have all
+- Preferences for linting, cache on save, and complete function calls have all
   been moved to workspace settings. Changing these settings will no longer
   restart the LSP client!
 - Fixed an out of bounds issue for LSP <> Nova range conversions.
