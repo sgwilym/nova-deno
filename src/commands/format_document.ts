@@ -17,8 +17,7 @@ export default function registerFormatDocument(client: LanguageClient) {
     const documentFormatting = {
       textDocument: { uri: editor.document.uri },
       options: {
-        // TODO: coerce editor.softTabs to number as it is returning 1, should be boolean
-        insertSpaces: editor.softTabs as unknown as number === 1,
+        insertSpaces: editor.softTabs,
         tabSize: editor.tabLength,
       },
     };
