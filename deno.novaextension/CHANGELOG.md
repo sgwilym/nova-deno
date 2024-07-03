@@ -1,3 +1,7 @@
+## v1.5.1
+
+- Fix a problem where the Deno format command was not respecting user preferences re: spaces and tabs.
+
 ## v1.5.0
 
 - Add a new "Reload Import Registries" command.
