@@ -1,3 +1,7 @@
+## v1.5.2
+
+- Fix a problem where formatting on save would not work and instead raise an annoying dialog box.
+
 ## v1.5.1
 
 - Fix a problem where the Deno format command was not respecting user preferences re: spaces and tabs.

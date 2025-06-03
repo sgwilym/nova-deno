@@ -5,7 +5,8 @@ import registerRenameSymbol from "./commands/rename_symbol.ts";
 import registerPaletteFindSymbol from "./commands/palette_find_symbol.ts";
 import registerSymbolSidebarFindSymbol from "./commands/sidebar_find_symbol.ts";
 import syntaxes from "./syntaxes.ts";
-import { getOverridableBoolean, wrapCommand } from "nova-utils";
+import { applyLSPEdits, getOverridableBoolean, wrapCommand } from "nova-utils";
+import * as lsp from "lsp";
 
 const FORMAT_ON_SAVE_CONFIG_KEY = "co.gwil.deno.config.formatOnSave";
 const TRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.trustedImportHosts";
@@ -14,287 +15,304 @@ const UNTRUSTED_HOSTS_CONFIG_KEY = "co.gwil.deno.config.untrustedImportHosts";
 // Deno expects a map of hosts for its autosuggestion feature, where each key is a URL and its value a bool representing whether it is trusted or not. Nova does not have a Configurable like this, so we'll have to assemble one out of two arrays.
 
 function getHostsMap() {
-	const trustedHosts = nova.config.get(TRUSTED_HOSTS_CONFIG_KEY) as string[] ||
-		[];
+  const trustedHosts = nova.config.get(TRUSTED_HOSTS_CONFIG_KEY) as string[] ||
+    [];
 
-	const untrustedHosts =
-		nova.config.get(UNTRUSTED_HOSTS_CONFIG_KEY) as string[] ||
-		[];
+  const untrustedHosts =
+    nova.config.get(UNTRUSTED_HOSTS_CONFIG_KEY) as string[] ||
+    [];
 
-	const hostsMap: Record<string, boolean> = {};
+  const hostsMap: Record<string, boolean> = {};
 
-	for (const trusted of trustedHosts) {
-		hostsMap[trusted] = true;
-	}
+  for (const trusted of trustedHosts) {
+    hostsMap[trusted] = true;
+  }
 
-	for (const untrusted of untrustedHosts) {
-		hostsMap[untrusted] = false;
-	}
+  for (const untrusted of untrustedHosts) {
+    hostsMap[untrusted] = false;
+  }
 
-	return hostsMap;
+  return hostsMap;
 }
 
 export class CanNotEnsureError extends Error {}
 async function ensureDenoIsInstalled(): Promise<void> {
-	function startProcess(location: string, args: string[], cwd?: string) {
-		const options = {
-			args,
-			cwd,
-		};
-		const process = new Process(location, options);
-		const onExit = new Promise((resolve, reject) => {
-			process.onDidExit((status) => {
-				const action = status == 0 ? resolve : reject;
-				action(status);
-			});
-		});
+  function startProcess(location: string, args: string[], cwd?: string) {
+    const options = {
+      args,
+      cwd,
+    };
+    const process = new Process(location, options);
+    const onExit = new Promise((resolve, reject) => {
+      process.onDidExit((status) => {
+        const action = status == 0 ? resolve : reject;
+        action(status);
+      });
+    });
 
-		process.start();
-		return onExit;
-	}
+    process.start();
+    return onExit;
+  }
 
-	try {
-		await startProcess("/usr/bin/env", ["deno", "--version"]);
-	} catch (e) {
-		if (e == 127) {
-			const failureNotificationRequest = new NotificationRequest(
-				"co.gwil.deno.notifications.findSymbolUnavailable",
-			);
-			failureNotificationRequest.title = "Deno can't be found.";
-			failureNotificationRequest.body =
-				"To use the Deno extension, install Deno.";
-			failureNotificationRequest.actions = [
-				"Retry",
-				"Ignore",
-			];
+  try {
+    await startProcess("/usr/bin/env", ["deno", "--version"]);
+  } catch (e) {
+    if (e == 127) {
+      const failureNotificationRequest = new NotificationRequest(
+        "co.gwil.deno.notifications.findSymbolUnavailable",
+      );
+      failureNotificationRequest.title = "Deno can't be found.";
+      failureNotificationRequest.body =
+        "To use the Deno extension, install Deno.";
+      failureNotificationRequest.actions = [
+        "Retry",
+        "Ignore",
+      ];
 
-			const { actionIdx } = await nova.notifications.add(
-				failureNotificationRequest,
-			);
+      const { actionIdx } = await nova.notifications.add(
+        failureNotificationRequest,
+      );
 
-			if (actionIdx == 1) {
-				const informationalNotificationRequest = new NotificationRequest(
-					"co.gwil.deno.notifications.howToEnableIntelliSense",
-				);
-				informationalNotificationRequest.title = "If you change your mind…";
-				informationalNotificationRequest.body =
-					"Restart the extension to enable its features.";
-				nova.notifications.add(informationalNotificationRequest);
+      if (actionIdx == 1) {
+        const informationalNotificationRequest = new NotificationRequest(
+          "co.gwil.deno.notifications.howToEnableIntelliSense",
+        );
+        informationalNotificationRequest.title = "If you change your mind…";
+        informationalNotificationRequest.body =
+          "Restart the extension to enable its features.";
+        nova.notifications.add(informationalNotificationRequest);
 
-				throw new CanNotEnsureError("Can't ensure Deno is installed!");
-			} else {
-				return ensureDenoIsInstalled();
-			}
-		} else {
-			throw e;
-		}
-	}
+        throw new CanNotEnsureError("Can't ensure Deno is installed!");
+      } else {
+        return ensureDenoIsInstalled();
+      }
+    } else {
+      throw e;
+    }
+  }
 }
 
 // Indicates whether the server is being 'restarted' (replaced)
 let isRestarting = false;
 
 export async function makeClientDisposable(
-	parentDisposable: CompositeDisposable,
+  parentDisposable: CompositeDisposable,
 ) {
-	const clientDisposable = new CompositeDisposable();
+  const clientDisposable = new CompositeDisposable();
 
-	await ensureDenoIsInstalled();
+  await ensureDenoIsInstalled();
 
-	const importMap = nova.workspace.config.get("deno.importMap");
+  const importMap = nova.workspace.config.get("deno.importMap");
 
-	const client = new LanguageClient(
-		"co.gwil.deno",
-		"Deno Language Server",
-		{
-			type: "stdio",
-			path: "/usr/bin/env",
-			args: ["deno", "lsp", "--quiet"],
-		},
-		{
-			syntaxes,
-			initializationOptions: {
-				enable: true,
+  const client = new LanguageClient(
+    "co.gwil.deno",
+    "Deno Language Server",
+    {
+      type: "stdio",
+      path: "/Users/gwil/.deno/bin/deno",
+      args: ["lsp", "--quiet"],
+    },
+    {
+      syntaxes,
 
-				cacheOnSave: nova.workspace.config.get("deno.cacheOnSave", "boolean"),
-				lint: nova.workspace.config.get("deno.lint", "boolean"),
-				unstable: nova.workspace.config.get(
-					"deno.unstable",
-					"boolean",
-				),
-				...(importMap ? { importMap } : {}),
-				suggest: {
-					names: true,
-					paths: true,
-					autoImports: true,
-					completeFunctionCalls: nova.workspace.config.get(
-						"deno.suggest.completeFunctionCalls",
-						"boolean",
-					) || false,
-					imports: {
-						autoDiscover: true,
-						hosts: getHostsMap(),
-					},
-				},
-				documentPreloadLimit: nova.workspace.config.get(
-					"co.gwil.deno.config.documentPreloadLimit",
-				) || undefined,
-				maxTsServerMemory: nova.workspace.config.get(
-					"co.gwil.deno.config.maxTsServerMemory",
-				) || undefined,
-			},
-		},
-	);
+      initializationOptions: {
+        enable: true,
+        cacheOnSave: nova.workspace.config.get("deno.cacheOnSave", "boolean"),
+        lint: nova.workspace.config.get("deno.lint", "boolean"),
+        unstable: nova.workspace.config.get(
+          "deno.unstable",
+          "boolean",
+        ),
+        ...(importMap ? { importMap } : {}),
+        suggest: {
+          names: true,
+          paths: true,
+          autoImports: true,
+          completeFunctionCalls: nova.workspace.config.get(
+            "deno.suggest.completeFunctionCalls",
+            "boolean",
+          ) || false,
+          imports: {
+            autoDiscover: true,
+            hosts: getHostsMap(),
+          },
+        },
+        documentPreloadLimit: nova.workspace.config.get(
+          "co.gwil.deno.config.documentPreloadLimit",
+        ) || undefined,
+        maxTsServerMemory: nova.workspace.config.get(
+          "co.gwil.deno.config.maxTsServerMemory",
+        ) || undefined,
+      },
+    },
+  );
 
-	try {
-		clientDisposable.add(registerFormatDocument(client));
-		clientDisposable.add(registerCache(client));
-		clientDisposable.add(registerReloadImportRegistries(client));
-		clientDisposable.add(registerRenameSymbol(client));
+  try {
+    clientDisposable.add(registerFormatDocument(client));
+    clientDisposable.add(registerCache(client));
+    clientDisposable.add(registerReloadImportRegistries(client));
+    clientDisposable.add(registerRenameSymbol(client));
 
-		// palette Find Symbol command
-		clientDisposable.add(registerPaletteFindSymbol());
-		// sidebar Find Symbol command
-		clientDisposable.add(registerSymbolSidebarFindSymbol(client));
+    // palette Find Symbol command
+    clientDisposable.add(registerPaletteFindSymbol());
+    // sidebar Find Symbol command
+    clientDisposable.add(registerSymbolSidebarFindSymbol(client));
 
-		nova.workspace.onDidAddTextEditor((editor) => {
-			const editorDisposable = new CompositeDisposable();
+    nova.workspace.onDidAddTextEditor((editor) => {
+      const editorDisposable = new CompositeDisposable();
 
-			clientDisposable.add(editorDisposable);
-			clientDisposable.add(
-				editor.onDidDestroy(() => editorDisposable.dispose()),
-			);
+      clientDisposable.add(editorDisposable);
+      clientDisposable.add(
+        editor.onDidDestroy(() => editorDisposable.dispose()),
+      );
 
-			// Formatting
+      // Formatting
 
-			editorDisposable.add(
-				editor.document.onDidChangeSyntax(refreshOnSaveListener),
-			);
+      editorDisposable.add(
+        editor.document.onDidChangeSyntax(refreshOnSaveListener),
+      );
 
-			editorDisposable.add(
-				nova.workspace.config.onDidChange(
-					FORMAT_ON_SAVE_CONFIG_KEY,
-					refreshOnSaveListener,
-				),
-			);
+      editorDisposable.add(
+        nova.workspace.config.onDidChange(
+          FORMAT_ON_SAVE_CONFIG_KEY,
+          refreshOnSaveListener,
+        ),
+      );
 
-			editorDisposable.add(
-				nova.config.onDidChange(
-					FORMAT_ON_SAVE_CONFIG_KEY,
-					refreshOnSaveListener,
-				),
-			);
+      editorDisposable.add(
+        nova.config.onDidChange(
+          FORMAT_ON_SAVE_CONFIG_KEY,
+          refreshOnSaveListener,
+        ),
+      );
 
-			let willSaveListener = setupOnSaveListener();
-			// @ts-ignore Getting Nova's Disposable and ES Disposables confused.
-			clientDisposable.add({
-				dispose() {
-					willSaveListener?.dispose();
-				},
-			});
+      let willSaveListener = setupOnSaveListener();
+      // @ts-ignore Getting Nova's Disposable and ES Disposables confused.
+      clientDisposable.add({
+        dispose() {
+          willSaveListener?.dispose();
+        },
+      });
 
-			function refreshOnSaveListener() {
-				willSaveListener?.dispose();
-				willSaveListener = setupOnSaveListener();
-			}
+      function refreshOnSaveListener() {
+        willSaveListener?.dispose();
+        willSaveListener = setupOnSaveListener();
+      }
 
-			function setupOnSaveListener() {
-				if (
-					!(syntaxes as Array<string | null>).includes(editor.document.syntax)
-				) {
-					return;
-				}
+      function setupOnSaveListener() {
+        if (
+          !(syntaxes as Array<string | null>).includes(editor.document.syntax)
+        ) {
+          return;
+        }
 
-				return editor.onWillSave(async () => {
-					if (getOverridableBoolean(FORMAT_ON_SAVE_CONFIG_KEY) === false) {
-						return;
-					}
+        return editor.onWillSave(async () => {
+          if (getOverridableBoolean(FORMAT_ON_SAVE_CONFIG_KEY) === false) {
+            return;
+          }
 
-					await nova.commands.invoke("co.gwil.deno.commands.formatDocument");
-				});
-			}
-		});
+          const documentFormatting = {
+            textDocument: { uri: editor.document.uri },
+            options: {
+              insertSpaces: editor.softTabs,
+              tabSize: editor.tabLength,
+            },
+          };
 
-		// Listen for Deno detecting a registry's intellisense capabilities...
-		client.onNotification(
-			"deno/registryState",
-			async (
-				{ origin, suggestions }: { origin: string; suggestions: string },
-			) => {
-				const trustedHosts = nova.workspace.config.get(
-					TRUSTED_HOSTS_CONFIG_KEY,
-				) as string[] || [];
-				const untrustedHosts = nova.workspace.config.get(
-					UNTRUSTED_HOSTS_CONFIG_KEY,
-				) as string[] || [];
+          const changes = (await client.sendRequest(
+            "textDocument/formatting",
+            documentFormatting,
+          )) as null | Array<lsp.TextEdit>;
 
-				const isUntrusted = Array.isArray(untrustedHosts) &&
-					untrustedHosts.includes(origin);
-				const isTrusted = Array.isArray(trustedHosts) &&
-					trustedHosts.includes(origin);
+          if (!changes) {
+            return;
+          }
 
-				if (!isUntrusted && !isTrusted) {
-					if (suggestions) {
-						const notificationReq = new NotificationRequest(
-							"co.gwil.deno.notifications.hostIntellisenseAvailable",
-						);
+          await applyLSPEdits(editor, changes);
+        });
+      }
+    });
 
-						notificationReq.title = "Intellisense available";
-						notificationReq.body =
-							`Would you like to enable import IntelliSense for ${origin}? Only do this if you trust ${origin}.`;
+    // Listen for Deno detecting a registry's intellisense capabilities...
+    client.onNotification(
+      "deno/registryState",
+      async (
+        { origin, suggestions }: { origin: string; suggestions: string },
+      ) => {
+        const trustedHosts = nova.workspace.config.get(
+          TRUSTED_HOSTS_CONFIG_KEY,
+        ) as string[] || [];
+        const untrustedHosts = nova.workspace.config.get(
+          UNTRUSTED_HOSTS_CONFIG_KEY,
+        ) as string[] || [];
 
-						notificationReq.actions = ["No", "Yes"];
+        const isUntrusted = Array.isArray(untrustedHosts) &&
+          untrustedHosts.includes(origin);
+        const isTrusted = Array.isArray(trustedHosts) &&
+          trustedHosts.includes(origin);
 
-						// if action idx is 0, add it to untrusted
-						const { actionIdx } = await nova.notifications.add(notificationReq);
+        if (!isUntrusted && !isTrusted) {
+          if (suggestions) {
+            const notificationReq = new NotificationRequest(
+              "co.gwil.deno.notifications.hostIntellisenseAvailable",
+            );
 
-						if (actionIdx === 0) {
-							nova.config.set(UNTRUSTED_HOSTS_CONFIG_KEY, [
-								...untrustedHosts,
-								origin,
-							]);
-						} else if (actionIdx === 1) {
-							nova.config.set(TRUSTED_HOSTS_CONFIG_KEY, [
-								...trustedHosts,
-								origin,
-							]);
-						}
-					}
-				}
-			},
-		);
+            notificationReq.title = "Intellisense available";
+            notificationReq.body =
+              `Would you like to enable import IntelliSense for ${origin}? Only do this if you trust ${origin}.`;
 
-		clientDisposable.add(nova.commands.register(
-			"co.gwil.deno.commands.restartServer",
-			wrapCommand(() => {
-				if (!isRestarting) {
-					const listener = client.onDidStop(async () => {
-						listener.dispose();
-						parentDisposable.add(await makeClientDisposable(parentDisposable));
-						isRestarting = false;
-					});
+            notificationReq.actions = ["No", "Yes"];
 
-					isRestarting = true;
+            // if action idx is 0, add it to untrusted
+            const { actionIdx } = await nova.notifications.add(notificationReq);
 
-					parentDisposable.remove(clientDisposable);
-					clientDisposable.dispose();
-				}
-			}),
-		));
+            if (actionIdx === 0) {
+              nova.config.set(UNTRUSTED_HOSTS_CONFIG_KEY, [
+                ...untrustedHosts,
+                origin,
+              ]);
+            } else if (actionIdx === 1) {
+              nova.config.set(TRUSTED_HOSTS_CONFIG_KEY, [
+                ...trustedHosts,
+                origin,
+              ]);
+            }
+          }
+        }
+      },
+    );
 
-		// @ts-ignore Getting Nova's Disposable and ES Disposables confused.
-		clientDisposable.add({
-			dispose() {
-				client.stop();
-			},
-		});
+    clientDisposable.add(nova.commands.register(
+      "co.gwil.deno.commands.restartServer",
+      wrapCommand(() => {
+        if (!isRestarting) {
+          const listener = client.onDidStop(async () => {
+            listener.dispose();
+            parentDisposable.add(await makeClientDisposable(parentDisposable));
+            isRestarting = false;
+          });
 
-		client.start();
-	} catch (err) {
-		if (nova.inDevMode()) {
-			console.error(err);
-		}
-	}
+          isRestarting = true;
 
-	return clientDisposable;
+          parentDisposable.remove(clientDisposable);
+          clientDisposable.dispose();
+        }
+      }),
+    ));
+
+    // @ts-ignore Getting Nova's Disposable and ES Disposables confused.
+    clientDisposable.add({
+      dispose() {
+        client.stop();
+      },
+    });
+
+    client.start();
+  } catch (err) {
+    if (nova.inDevMode()) {
+      console.error(err);
+    }
+  }
+
+  return clientDisposable;
 }

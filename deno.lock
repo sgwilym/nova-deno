@@ -1,23 +1,18 @@
 {
-  "version": "3",
-  "packages": {
-    "specifiers": {
-      "npm:@types/nova-editor-node": "npm:@types/nova-editor-node@5.1.4",
-      "npm:vscode-languageserver-types": "npm:vscode-languageserver-types@3.17.5"
+  "version": "5",
+  "specifiers": {
+    "npm:@types/nova-editor-node@*": "5.1.4",
+    "npm:vscode-languageserver-types@*": "3.17.5"
+  },
+  "npm": {
+    "@types/nova-editor-node@5.1.4": {
+      "integrity": "sha512-S/GlHNya+zA+EyYxl/EnEPB7xJTGz5RDz/MU3ZytMK4Hl6rQSegl0Deq7t+2NnxwYFdRnJ9RVMsLDIQQHXxLGw=="
     },
-    "npm": {
-      "@types/nova-editor-node@5.1.4": {
-        "integrity": "sha512-S/GlHNya+zA+EyYxl/EnEPB7xJTGz5RDz/MU3ZytMK4Hl6rQSegl0Deq7t+2NnxwYFdRnJ9RVMsLDIQQHXxLGw==",
-        "dependencies": {}
-      },
-      "vscode-languageserver-types@3.17.5": {
-        "integrity": "sha512-Ld1VelNuX9pdF39h2Hgaeb5hEZM2Z3jUrrMgWQAu82jMtZp7p3vJT3BzToKtZI7NgQssZje5o0zryOrhQvzQAg==",
-        "dependencies": {}
-      }
+    "vscode-languageserver-types@3.17.5": {
+      "integrity": "sha512-Ld1VelNuX9pdF39h2Hgaeb5hEZM2Z3jUrrMgWQAu82jMtZp7p3vJT3BzToKtZI7NgQssZje5o0zryOrhQvzQAg=="
     }
   },
   "redirects": {
-    "https://esm.sh/@types/nova-editor-node": "https://esm.sh/v135/@types/nova-editor-node@5.1.4/index.d.ts",
     "https://esm.sh/strip-json-comments": "https://esm.sh/strip-json-comments@5.0.1"
   },
   "remote": {
@@ -119,11 +114,7 @@
     "https://deno.land/x/denoflate@1.2.1/mod.ts": "f5628e44b80b3d80ed525afa2ba0f12408e3849db817d47a883b801f9ce69dd6",
     "https://deno.land/x/denoflate@1.2.1/pkg/denoflate.js": "b9f9ad9457d3f12f28b1fb35c555f57443427f74decb403113d67364e4f2caf4",
     "https://deno.land/x/denoflate@1.2.1/pkg/denoflate_bg.wasm.js": "d581956245407a2115a3d7e8d85a9641c032940a8e810acbd59ca86afd34d44d",
-    "https://deno.land/x/emit@0.0.2/lib/deno_emit.generated.js": "ef748eb9fa6b28567be22ff05ca5e4428fc08aa8bf06dab958c7206d6296de71",
-    "https://deno.land/x/emit@0.0.2/mod.ts": "91f69c194d4ab61b3950e84bfe086d0db2463bd4950950a12e5b101b3d2d4781",
-    "https://deno.land/x/esbuild@v0.14.11/mod.js": "a820183fd5835b42d68ea6e558a551624d611a30d71f7ff5a35b4bbd7010c574",
     "https://deno.land/x/esbuild@v0.19.2/mod.js": "d619154b9c1cc70e8ee4b8db94fb01f00767c9e83089c135cede0cd3edd342a0",
-    "https://deno.land/x/esbuild@v0.19.7/mod.js": "a065cc38cd52019fe17c0d097f4389e3b10a6c699024e4e31a7475bb5e70cfb0",
     "https://deno.land/x/esbuild_deno_loader@0.8.2/deps.ts": "c1aa4747e43d3ae09da96e54aac798ed9bb967634cff72f21b7fab6e5435c293",
     "https://deno.land/x/esbuild_deno_loader@0.8.2/mod.ts": "28524460bef46d487221b01ade6ed913d2e127de7eeee025ab75b34b491283da",
     "https://deno.land/x/esbuild_deno_loader@0.8.2/src/deno.ts": "b0af3e430c068f18c6fa48c2083a1b4354b6c303e16fb37855e02fcafb95f36d",
@@ -134,12 +125,12 @@
     "https://deno.land/x/esbuild_deno_loader@0.8.2/src/shared.ts": "33052684aeb542ebd24da372816bbbf885cd090a7ab0fde7770801f7f5b49572",
     "https://deno.land/x/importmap@0.2.1/_util.ts": "ada9a9618b537e6c0316c048a898352396c882b9f2de38aba18fd3f2950ede89",
     "https://deno.land/x/importmap@0.2.1/mod.ts": "ae3d1cd7eabd18c01a4960d57db471126b020f23b37ef14e1359bbb949227ade",
-    "https://esm.sh/strip-json-comments@5.0.1": "fabcbc63e4cee39c3bf8b5dd201d2ce66f25c7e4b78a7dec7a2f0cc1c813f1d1",
-    "https://esm.sh/v135/strip-json-comments@5.0.1/denonext/strip-json-comments.mjs": "b9fe1c5b40bc365d1175afd7b9bf0adb1a79aa3f3e2f31ca280088d96c5f9c67"
+    "https://esm.sh/strip-json-comments@5.0.1": "7319aa2d65db62221c7e5a2a31b103dda649570fff2ad55b232ce8413b6c15bd",
+    "https://esm.sh/strip-json-comments@5.0.1/denonext/strip-json-comments.mjs": "5e5a1ba501c1c346c352e45f03194bfe42e5090d131780e79bd2cd1b9458833b"
   },
   "workspace": {
     "dependencies": [
-      "npm:vscode-languageserver-types"
+      "npm:vscode-languageserver-types@*"
     ]
   }
 }
