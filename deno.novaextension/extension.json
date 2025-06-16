@@ -29,7 +29,8 @@
     "onLanguage:typescript",
     "onLanguage:tsx",
     "onLanguage:javascript",
-    "onLanguage:jsx"
+    "onLanguage:jsx",
+    "onWorkspaceContains:deno.json"
   ],
 
   "config": [
