@@ -1,3 +1,7 @@
+## v1.5.3
+
+- Fix an issue where the extension was looking for Deno at the wrong path.
+
 ## v1.5.2
 
 - Fix a problem where formatting on save would not work and instead raise an annoying dialog box.
