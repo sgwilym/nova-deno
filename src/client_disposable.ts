@@ -100,8 +100,6 @@ export async function makeClientDisposable(
 ) {
   const clientDisposable = new CompositeDisposable();
 
-  const denoPath = `${nova.environment.HOME}/.deno/bin/deno`;
-
   await ensureDenoIsInstalled();
 
   const importMap = nova.workspace.config.get("deno.importMap");
@@ -111,8 +109,8 @@ export async function makeClientDisposable(
     "Deno Language Server",
     {
       type: "stdio",
-      path: denoPath,
-      args: ["lsp", "--quiet"],
+      path: "/usr/bin/env",
+      args: ["deno", "lsp", "--quiet"],
     },
     {
       syntaxes,

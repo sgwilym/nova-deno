@@ -1,3 +1,7 @@
+## v1.5.4
+
+- Fix a regression where the extension did not support Deno when installed with e.g. Homebrew
+
 ## v1.5.3
 
 - Fix an issue where the extension was looking for Deno at the wrong path.

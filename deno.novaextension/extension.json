@@ -3,7 +3,7 @@
   "name": "Deno",
   "organization": "Sam Gwilym",
   "description": "Everything you need for TypeScript and JavaScript development.",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "categories": [
     "languages",
     "formatters",
