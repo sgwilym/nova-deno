@@ -1,0 +1,3 @@
+[submodule "nova_utils"]
+	path = nova_utils
+	url = git@github.com:sgwilym/nova_utils.git
